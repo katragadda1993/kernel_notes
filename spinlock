@@ -1,0 +1,10 @@
+
+
+why spin_lock disables the preemption ?
+
+process A and process B both access same data, so you define a SPIN LOCK. if A is holding the lock but keep preemption enabled. then A may be scheduled out, and B has a chance to run. if B try to get the lock. B will spin and waste cpu.
+
+spin lock is designed for efficiency and protect small & fast critical zone. so spin block disable preemption. if you want lock but keep preemption enabled. you can use mutex lock.
+
+when Process A release the lock, preemption is enabled again. so other process has a chance to run. before that, only hardware interrupt and software irqs can run.
+
