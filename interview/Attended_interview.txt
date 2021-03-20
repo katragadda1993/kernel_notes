@@ -1,0 +1,67 @@
+
+
+Altron Tech : 
+
+1. Skeleton of charactrer device registration ?
+
+2. take an example of i2c eprom and how its accesable by user space application?
+
+3. what is diffrent type of locking mahecnisim in linux kernel ?
+
+4. what is ISR and registration api?
+
+5. what kmalloc and vmalloc explian in details?
+
+6. how do find the size of two dimension  int  arry [1][1];
+
+
+#################################################
+
+Sasken Technologies (Abdul) 
+
+1. Explain boot process of what ever the board you have worked until rootfs framework comes.
+
+2. How power management frame works in ARM board and linux?
+
+3. Explain spinlock why it's disabling premption ?
+
+4. write program to find number is power of 2 ?
+
+5. write program to reverse the string?
+
+6. what is use of device tree in linux kernel ?
+ 
+##################################################
+
+Mobigesture 
+
+1. what is structure padding ? 
+
+2. what is diffrent type of locking mahecnisim in linux kernel ?
+
+3. Explain about storgae specfiers ?
+
+4. what is volatile keyword?
+
+5. which flag is used to disable platform driver ?
+
+
+#####################################################
+ 
+L & T 
+
+1. what is wild pointer ?
+
+2. what is dangling pointer?
+
+3. what is null pointer ?
+
+4. what is use of static keyword ?
+
+5. How your own size of macro works?
+
+6. what is function pointer why it's required ?
+
+7. how do check in your project having multiple source files?
+ 
+
