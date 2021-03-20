@@ -69,5 +69,7 @@ L & T
 6. what is function pointer why it's required ?
 
 7. how do check in your project having multiple source files?
- 
+
+8. where register variables and auto varibles are stored in memory layout file?
+
 
