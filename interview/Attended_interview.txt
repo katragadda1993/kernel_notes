@@ -14,7 +14,13 @@ Altron Tech :
 
 6. how do find the size of two dimension  int  arry [1][1];
 
+7. how do read gpio pin without using kernel absrcation API's?
 
+	Example : -1 
+			GPIO Bank 3 
+				> set of memory map ;
+				> we need map physical address of GPIO 3 for example 0x2020F
+				
 #################################################
 
 Sasken Technologies (Abdul) 
