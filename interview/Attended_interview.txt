@@ -67,4 +67,8 @@ L & T
 
 8. where register variables and auto varibles are stored in memory layout file?
 
+9. what is difference between pointer to constant and constant pointer in c ?
+
+10.Where is register variables are stored in memory sections of a program?
+
 #################################################################################
