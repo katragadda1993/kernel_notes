@@ -75,7 +75,21 @@ int reverse(int num)
 	show_bits(rev);
 }
 
+
+int reverse_bits(int num)
+{
+	int var = 0;
+	show_bits(num);
+	while(num)
+        {
+                var = (var * 2) + num % 2;
+                num = num/2;
+        }
+	show_bits(var);
+
+}
+
 int main()
 {
-	reverse(7);
+	reverse_bits(0xA7);
 }
