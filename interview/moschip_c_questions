@@ -1,0 +1,64 @@
+1.How To Write The Program On Full-duplex Communication On Bidirectional(Using Two Pipes)
+
+
+2.Write a program to Display/Print all the Nodes data in a Linked List using Recursion.
+
+void PrintRec_Node(struct *head)
+{
+      if ( head == NULL )
+	      return ;
+	PrintRec_Node(head->next);
+	printf("%d\n"head->data);
+}
+
+3.Write a Program to Count the Number of Occurrences of an Element in the Linked List.
+
+ int Occ_count(struct node *head,int num)
+{
+	struct node *tmp = head;
+
+	while(tmp != NULL)
+	{
+		if (tmp->num == num)
+			counter++;
+		tmp = tmp->next;
+	}
+	return counter;
+}
+
+4.Write a Program Set a particular bit and clear a particular bit?
+
+	void set_bit(int *num,int postion)
+	{
+		*num|= (1 << postion);
+
+	}
+
+	void set_bit(int *num,int postion)
+        {
+                *num&= ~(1 << postion);
+
+        }
+
+
+5.Write a program to reverse bits of a number.
+
+	int reverse_bits(int num)
+	{
+		int rev;
+
+		while (num)
+		{
+			rev = rev*2+num%2;
+			num = num/2;
+			
+		}
+	}
+
+6.Write a program to find position of only set bits in a given integer/number.
+  
+	for(int i=0;i<31;i++)
+        {
+                (num & (1<< i) ) == 0 ? :printf("%d\n",i);
+        }
+ 
