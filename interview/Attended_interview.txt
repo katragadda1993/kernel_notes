@@ -72,3 +72,13 @@ L & T
 10.Where is register variables are stored in memory sections of a program?
 
 #################################################################################
+
+
+################ AMI ################
+
+1. how to access memory mapped registers in driver ?
+
+2. how to access Device file in user process ?
+
+ 
+
