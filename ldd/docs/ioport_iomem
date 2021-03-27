@@ -1,0 +1,10 @@
+
+
+Alternatively referred to as I/O address, I/O port, and I/O port address, the input/output port is a memory address used by software to communicate with hardware on your computer. In your computer there are 65,536 memory ports that are numbered from 0000h to FFFFh.
+
+The I/O port assignment can be made either manually using DIP switches or automatically using PnP. When configuring a devices I/O port, it's important that it does not share the same port as another device or you a hardware conflict occurs.
+
+
+
+
+

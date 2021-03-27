@@ -1,0 +1,20 @@
+
+
+I2C is a two-wire, bidirectional serial bus that provides a simple, efficient method of data
+exchange, minimizing the interconnection between devices. This bus is suitable for
+applications requiring occasional communications over a short distance between many
+devices
+
+
+The I2C interface operates up to 400 kbps, but the speed is dependent on the I2C bus
+loading and timing characteristics. For pin requirement details, refer to Philips I2C Bus
+Specification, Version 2.1. The I2C system is a true multiple-master bus including
+arbitration and collision detection that prevents data corruption if multiple devices
+attempt to control the bus simultaneously. This feature supports complex applications
+with multiprocessor control and can be used for rapid testing and alignment of end
+products through external connections to an assembly-line computer. The figure below
+shows the block diagram of I2C
+
+
+
+
