@@ -1,7 +1,7 @@
 
 ################### How System call works ############
 
-In linux we can access hardware or kernel data structres are memory allocations using systems calls , when  ever system call invoked  by any aapplication and it will switch to kernel  mode and attache kernel  stack to user space process address space.
+In linux we can access hardware or kernel data structres are memory allocations using systems calls , when  ever system call invoked  by any aapplication and it will switch to kernel  mode and attach kernel  stack to user space process address space.
 
 		User Application  (Unprevilaged mode )
 

@@ -5,20 +5,20 @@ int main(int argc,char **argv)
 
 	char recvline[100];
 
-	struct sockaddr_in serveraddr;
+	struct sockaddr_in6 serveraddr;
 	
 	if (argc != 2 )
 		err_quit("usage: a.out <Ipaddress>");
 
-	if( (sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0 )
+	if( (sockfd = socket(AF_INET6,SOCK_STREAM,0)) < 0 )
 		err_sys("scoket error");
 	
 	bzero(&serveraddr,sizeof(serveraddr));
 
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port   = htons(8080);
+	serveraddr.sin6_family = AF_INET6;
+	serveraddr.sin6_port   = htons(8080);
 
-	if (inet_pton(AF_INET,argv[1],&serveraddr.sin_addr) <= 0 )
+	if (inet_pton(AF_INET6,argv[1],&serveraddr.sin6_addr) <= 0 )
 		err_quit("inet error for %s",argv[1]);
 
 	int ret_val = connect(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr)); 		
@@ -26,7 +26,7 @@ int main(int argc,char **argv)
 		err_sys("Connect Error :%d",ret_val);
 
 
-	while ( n = read(sockfd,recvline,MAXLINE) > 0 )
+	while ( (n = read(sockfd,recvline,MAXLINE)) > 0 )
 	{
 		recvline[n] = 0; /*Null Terminate */
 
