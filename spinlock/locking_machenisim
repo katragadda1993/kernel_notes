@@ -1,4 +1,0 @@
-
-Why kernel  locking is required ?
-
-  mostly kernel locking is required when ever shared resources are accesing by process in kernel  mode,
