@@ -1,0 +1,1 @@
+cmd_/home/naresh/sahasalu/pros/mywork/chrdrv/register_chr_dev/naresh.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/naresh/sahasalu/pros/mywork/chrdrv/register_chr_dev/naresh.ko /home/naresh/sahasalu/pros/mywork/chrdrv/register_chr_dev/naresh.o /home/naresh/sahasalu/pros/mywork/chrdrv/register_chr_dev/naresh.mod.o;  true
