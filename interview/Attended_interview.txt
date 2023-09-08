@@ -80,5 +80,25 @@ L & T
 
 2. how to access Device file in user process ?
 
+################ Advanced Micro Devices #############
+Firmware Req:
+
+1. what is PCI config space and how you will access config space?
+2. what is PCI BAR mmio address who will generate it and when?
+3. What is IOMMU and why its required?
+4. How You will program DMA descriptor's ?
+5. How Scatter/Gather DMA works . what changes observed while your using DMA as scatter/gather?
+6. How will driver handle if same kind of devices ex : PCI two same devices are connected bus.
+   more about PCI ID how bus id and function like stuff.
+7. Why paging is required. what its advantages?
+8. Explain about mutex and semphore in Linux, why can't we use binary semaphore instead mutex.
+9. spinlock why its required.
+10. Kernel Interupt handler  code. what is interupt vectors and exception.
+11. what is virual memory and virtual address.
+12. why MMU is required. what happen if system dose not have MMU.
+13. How will build kenel and debug.
+14. Update 110 in u32 variable from 14 to 16 bits.
+
+
  
 
