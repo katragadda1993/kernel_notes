@@ -224,7 +224,7 @@ late
 
 In this source revision, rootfs initcalls occupy a dedicated linker subsection between the fs and device ranges. The runtime loop iterates the range from initcall level 5 to level 6, so rootfs entries are included in that interval; do not assume the printed level name is a separate rootfs phase.
 
-Why levels exist: subsystems have dependencies. A bus, framework or provider often needs to register before a consumer driver can use it. Initcall levels express broad ordering, while the device model and deferred-probe mechanisms handle many runtime dependencies.
+Why levels exist: subsystems have dependencies. A bus, framework or provider often needs to register before a consumer driver can use it. In v7.4-rc4, do_basic_setup() calls driver_init() before do_ctors() and do_initcalls(), preparing the driver core before the normal built-in initcall ranges are walked. Initcall levels express broad ordering, while the device model and deferred-probe mechanisms handle many runtime dependencies. A non-zero initcall return is recorded by the initcall runner, but it does not automatically abort the entire boot; the impact depends on which provider or subsystem failed and which later consumers require it.
 
 Built-in driver initcalls are not the same as module loading. A module's initialization function runs when the module is loaded, which may happen much later from early userspace or the normal root filesystem.
 
