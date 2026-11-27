@@ -50,3 +50,20 @@ Link kernel documentation, exact source files, subsystem maintainers and relevan
 - Every DMA path explains mapping, synchronization, ordering and ownership.
 - Every IRQ path explains acknowledgement, concurrency and teardown.
 - Every PM path explains clocks, resets, power domains and failure recovery.
+
+
+## 12. Upstream change and trend analysis
+For lessons derived from recent kernel development:
+- State the exact kernel release, tag or commit and whether the change is merged mainline, present only in linux-next, proposed on a mailing list, or merely discussed.
+- Link the merge commit, original subsystem pull request and relevant source diff.
+- Explain the problem before the change, design alternatives, compatibility impact and why maintainers accepted it when evidence is available.
+- Trace changed structures, functions, call paths, Kconfig and user-visible behavior.
+- Include hardware/driver implications, regression risks, test strategy and a small hands-on exercise.
+- Clearly label trend observations as confirmed merged work, active development, or informed interpretation.
+- Compare with the prior implementation when useful; never present a proposed patch as released functionality.
+
+## 13. Interview bank maintenance
+Every lesson adds at least 10 non-duplicate questions: 4 fundamentals, 3 source/API/implementation, 2 debugging scenarios and 1 architecture/trade-off question. Include difficulty, concise answer checkpoints and a link to the lesson. Grow the bank toward 500+ questions over time; do not claim a target count until the questions exist.
+
+## 14. Historical/source archaeology
+Use git log, git blame, merge commits, subsystem pull requests, lore.kernel.org discussions and maintainer documentation. Record direct evidence for historical claims and label interpretation separately.
