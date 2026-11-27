@@ -58,3 +58,12 @@ Before probe() can run, the bootloader and kernel must agree on the hardware sta
 - Firmware-backed IPC sessions and shared-memory channels must have a defined ownership transition from boot firmware to Linux.
 
 For an SoC containing an audio DSP, PCIe endpoint and storage controller, write down which boot stage owns each DMA engine and reserved-memory region. The kernel must not reuse memory while firmware or a device can still access it.
+
+
+## Build and ABI prerequisite
+
+Complete [Lesson 03 — C, ELF, Linker and Kbuild Foundations](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) before implementing a hardware-facing driver. Record the target architecture, compiler, kernel commit, .config, generated headers and Module.symvers source.
+
+For every hardware-visible structure, document size, member offsets, alignment, endianness and ownership. Distinguish CPU virtual, CPU physical and device DMA addresses. Use __iomem accessors for registers, endian conversions for device formats and the DMA API for mappings. Do not treat __packed or a successful x86 build as proof of portable hardware layout.
+
+For a driver built into vmlinux, verify its Kconfig dependency and initcall/provider ordering. For a module, verify vermagic, exported symbols, namespaces, symbol versions and firmware availability. Never load a module built against a different target kernel merely because it compiled.
