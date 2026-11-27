@@ -221,3 +221,36 @@ Answer checkpoint: Running architecture and ABI, syscall number/table for that k
 
 **136. [Advanced | Architecture/trade-off] Why does x86-64 use SYSRET only when the saved state satisfies strict conditions and otherwise fall back to IRET?**  
 Answer checkpoint: SYSRET is a fast path with narrower assumptions about return RIP, flags and selectors. IRET handles more general saved state and is required for exceptional/compatibility cases; correctness wins over the fast path.
+
+
+## 13. Lesson 02 — Linux boot and early initialization (Questions 137–146)
+
+**137. [Beginner | Fundamentals] Why is a modern x86 bzImage more than a compressed vmlinux?**  
+Answer checkpoint: It includes the x86 boot/setup protocol and decompressor code as well as the compressed kernel payload. The bootloader needs a defined handoff interface and boot parameters.
+
+**138. [Intermediate | Fundamentals] What does the arm64 bootloader pass in x0 for the documented FDT boot path?**  
+Answer checkpoint: The physical address of the DTB. x1–x3 are reserved and must be zero. The documented protocol also specifies CPU, MMU, interrupt and memory conditions.
+
+**139. [Intermediate | Fundamentals] What is the practical difference between initrd and initramfs?**  
+Answer checkpoint: The historical initrd is a block-device-style initial ramdisk image. Initramfs is a cpio archive unpacked into the initial rootfs; its /init program runs as early userspace.
+
+**140. [Intermediate | Fundamentals] Compare rdinit=, init= and root=.**  
+Answer checkpoint: rdinit= selects early userspace from initramfs; init= selects the final init executable after the normal root path is prepared; root= identifies the real root source for the kernel mount path.
+
+**141. [Intermediate | Source/API] In v7.4-rc4, what are the major responsibilities of start_kernel() before rest_init()?**  
+Answer checkpoint: Establish boot CPU state, call setup_arch(), parse the command line, initialize early memory/traps, scheduler, IRQ/timekeeping, console and core subsystems, then transition through rest_init().
+
+**142. [Advanced | Source/API] How are initcall functions collected and ordered?**  
+Answer checkpoint: Macros in include/linux/init.h place function pointers into named sections. The linker script keeps and orders those sections. init/main.c walks the resulting ranges. rootfs is a distinct subsection between fs and device ranges in this source revision.
+
+**143. [Advanced | Source/API] Why does kernel_init_freeable() call wait_for_initramfs() before trying early userspace?**  
+Answer checkpoint: populate_rootfs() may unpack the archive asynchronously. The wait ensures /init and its files are ready before the kernel checks and executes the early init path.
+
+**144. [Intermediate | Debugging] The kernel prints “No working init found.” What do you inspect?**  
+Answer checkpoint: Confirm the selected init path, executable bit, shebang interpreter, ELF ABI and dynamic loader, shared libraries, root mount, initramfs contents and rdinit=/init/init= overrides.
+
+**145. [Advanced | Debugging] A SoC boots inconsistently after the bootloader jumps to arm64 Linux. What handoff-specific bug would you investigate?**  
+Answer checkpoint: Verify all DMA-capable bus masters are quiesced, reserved-memory ranges are correct, the DTB is valid and correctly placed, cache/coherency state meets the boot protocol, and CPU/MMU/interrupt state is compliant.
+
+**146. [Advanced | Architecture/trade-off] A storage or audio driver is required before the real root filesystem can mount. Should it be built-in or modular?**  
+Answer checkpoint: Either compile the driver and its dependencies into the kernel, or include the module, firmware and dependency tooling in initramfs. Evaluate boot reliability, dependency ordering, update flexibility, image size and attack surface; a module only on the unavailable real root cannot load early enough.
