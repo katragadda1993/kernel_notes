@@ -13,7 +13,7 @@ Each module should contain a lesson, kernel-source walkthrough, lab, debugging e
 8. Shell, Git, Make, GCC/Clang, GDB and cross-compilation
 Lab: inspect an ELF binary and trace a system call.
 
-**Completed lesson:** [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) covers OS protection, CPU privilege states, system calls, exceptions and interrupts. Its x86-64 lab was built and run; arm64 and strace validation remain outstanding.
+**Completed lesson:** [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) covers OS protection, CPU privilege states, system calls, exceptions and interrupts. Its x86-64 lab was built and run; arm64 and strace validation remain outstanding.\n\n**Completed lesson:** [Lesson 02 — Linux Boot and Early Initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) covers the bootloader handoff, x86/arm64 entry paths, start_kernel(), initcalls, initramfs and PID 1. The archive/chroot lab passed; QEMU boot remains unverified.
 
 ## Stage 1 — Kernel architecture and environment
 1. Kernel source tree and subsystem ownership
@@ -24,7 +24,7 @@ Lab: inspect an ELF binary and trace a system call.
 6. Coding style, documentation and source navigation
 7. Out-of-tree modules and module lifecycle
 8. printk, dmesg and dynamic debug
-Lab: build and boot a kernel in QEMU; load a hello module.
+Lab: build and boot a kernel in QEMU; load a hello module.\n\n**Completed lesson:** [Lesson 02 — Linux Boot and Early Initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) introduces the boot and initramfs path; a full QEMU kernel boot remains a follow-up validation.
 
 ## Stage 2 — Kernel C and essential APIs
 1. Kernel coding conventions and GNU C
