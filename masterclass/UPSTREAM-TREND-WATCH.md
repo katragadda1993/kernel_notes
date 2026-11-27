@@ -176,15 +176,15 @@ The previously recorded [arm64 fixes merge 822ba3a89c7896b26e4beb70e2ebffb881924
 - Continue the curriculum with Lesson 03; no upstream-derived lesson is justified solely by the lack of new merge activity.
 
 
-## Checkpoint 2026-11-28 05:15 IST — post-Lesson 02 upstream delta
+## Checkpoint 2026-11-28 05:15 IST — mainline merge-list reconciliation
 
 ### Release and integration status
 
 - [kernel.org](https://www.kernel.org/) still lists mainline **7.4-rc4** (2026-11-22) and stable **7.3.6** (2026-11-23). Longterm releases shown include **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**.
 - The latest linux-next tag listed remains **next-20261127** (2026-11-27). No next-20261128 tag is listed on the kernel.org index. The exact linux-next commit was not independently retrieved in this run.
-- The latest merge returned by the mainline commit search was [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e), the thermal-7.4-rc5 pull. The following changes are merged into mainline master after the previous 04:14 IST checkpoint, but kernel.org still publishes 7.4-rc4. Do not call them released 7.4-rc5 features.
+- The latest merge returned by the mainline commit search was [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e), the thermal-7.4-rc5 pull. **Timestamp reconciliation:** the selected merge commits below are dated 2026-11-27 17:42–20:41 UTC (23:12–02:11 IST). Those timestamps are earlier than the previous 04:14 IST checkpoint. Therefore this is a correction/completion of the previous checkpoint's incomplete merge list, not evidence that these commits landed after 04:14. The previous checkpoint had recorded 9437ee8 as the latest mainline merge but missed these already-present commits. Kernel.org still publishes 7.4-rc4; do not call these released 7.4-rc5 features.
 
-### Selected mainline changes since the prior checkpoint
+### Selected mainline merges newly captured in this reconciliation
 
 1. **ALSA/ASoC: PCM buffer lifetime, locking and stream-state fixes**  
    Classification: merged mainline; not yet in a new published release tag.  
@@ -239,6 +239,6 @@ Lesson 03 explains why Kbuild, type annotations, object layout and link order ar
 
 ### Next checkpoint
 
-- Compare against mainline merge [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e) and the selected sound/IOMMU/GPIO/PM merges above.
+- Use mainline merge [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e) as the latest recorded merge baseline, along with the selected sound/IOMMU/GPIO/PM merges above. These commits were newly recorded here but predate the prior 04:14 IST checkpoint.
 - Recheck kernel.org for a new mainline release tag and linux-next snapshot.
 - Do not repeat these as new unless a later merge changes the implementation or status.
