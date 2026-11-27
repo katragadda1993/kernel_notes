@@ -254,3 +254,36 @@ Answer checkpoint: Verify all DMA-capable bus masters are quiesced, reserved-mem
 
 **146. [Advanced | Architecture/trade-off] A storage or audio driver is required before the real root filesystem can mount. Should it be built-in or modular?**  
 Answer checkpoint: Either compile the driver and its dependencies into the kernel, or include the module, firmware and dependency tooling in initramfs. Evaluate boot reliability, dependency ordering, update flexibility, image size and attack surface; a module only on the unavailable real root cannot load early enough.
+
+
+## 14. Lesson 03 — C, ELF, linker and Kbuild (Questions 147–156)
+
+**147. [Beginner | Fundamentals] Why does a driver use fixed-width kernel types such as u32 rather than assuming that unsigned long is 32 bits?**  
+Answer checkpoint: unsigned long follows the target ABI and may be 32 or 64 bits. Hardware fields and wire formats have specified widths; fixed-width types make the intended width explicit. Endianness remains a separate concern.
+
+**148. [Beginner | Fundamentals] What is the difference between a CPU physical address and a dma_addr_t?**  
+Answer checkpoint: the DMA address is the device-visible address returned/managed by the DMA API and may be an IOVA translated by an IOMMU. Never derive it by casting a CPU pointer or phys_addr_t.
+
+**149. [Intermediate | Fundamentals] Why can sizeof(struct) differ from the sum of its member sizes?**  
+Answer checkpoint: the compiler inserts padding to satisfy member and overall alignment. Use sizeof() and offsetof() for the target ABI and enforce hardware layout with documented alignment/size checks.
+
+**150. [Intermediate | Fundamentals] Why are C bitfields not a portable way to describe MMIO register bits?**  
+Answer checkpoint: bitfield allocation order, packing and layout are implementation-defined. Use masks, shifts and kernel FIELD_PREP/FIELD_GET helpers, then use the proper MMIO accessors.
+
+**151. [Intermediate | Source/API] What do __user and __iomem annotations tell the kernel developer and Sparse?**  
+Answer checkpoint: they mark distinct address spaces and help catch invalid pointer use. They do not perform access or conversion; use copy_{to,from}_user() and readl()/writel() or the relevant APIs.
+
+**152. [Intermediate | Source/API] Explain obj-y, obj-m and obj-$(CONFIG_FOO) in a Kbuild Makefile.**  
+Answer checkpoint: obj-y contributes built-in objects, obj-m builds a module, and the configuration form maps y/m/n to built-in/module/omitted behavior. Composite objects use the corresponding <module>-y list.
+
+**153. [Advanced | Source/API] What does a relocation entry in an ELF ET_REL object represent?**  
+Answer checkpoint: it identifies a location, relocation type, symbol and addend that the linker or module loader must use to calculate/fix an address or value after placement is known.
+
+**154. [Intermediate | Debugging] A module compiles but modpost reports an undefined symbol. What do you inspect?**  
+Answer checkpoint: confirm the symbol is exported, the required config is enabled, the correct Module.symvers is used, symbol namespaces are imported where required, and the module is built against the intended configured output tree. A global C symbol is not automatically a module API.
+
+**155. [Advanced | Debugging] A .ko is a valid ELF file but insmod reports Invalid module format. What are likely causes?**  
+Answer checkpoint: check dmesg, vermagic, kernel release/config, architecture and ABI, symbol versioning, module signature policy and whether the module was built against the exact target kernel tree. Successful compilation is not load compatibility.
+
+**156. [Advanced | Architecture/trade-off] When should a driver be built into vmlinux rather than shipped as a module?**  
+Answer checkpoint: consider the boot dependency chain (especially root storage/filesystem), initramfs contents, firmware availability, recovery/update flexibility, image size, attack surface and deployment policy. A module needed before the real root is mounted must be built in or available from initramfs.
