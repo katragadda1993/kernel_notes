@@ -45,3 +45,16 @@ Each capstone must run in QEMU, a mock/test framework, or documented real hardwa
 ## Foundation prerequisite
 
 Before implementing a driver entry point, complete [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md). A driver request path begins in a syscall or subsystem interface, while hardware completion is commonly asynchronous through IRQs, polling or deferred work. Keep request context and completion context separate in every design and trace.
+
+
+## Boot-time driver availability and firmware handoff
+
+Before probe() can run, the bootloader and kernel must agree on the hardware state:
+
+- Boot firmware must stop or reset DMA-capable bus masters before handing RAM to Linux. This is explicitly required by the arm64 boot protocol.
+- Device Tree/ACPI must describe MMIO resources, IRQs, clocks, resets, regulators, IOMMU and reserved memory consistently with the hardware.
+- Drivers needed to discover or mount the real root filesystem must either be built into the kernel or be available as modules (with firmware and dependencies) inside initramfs.
+- A provider that is not registered when a consumer probes may cause deferred probing; boot ordering is not a substitute for explicit framework dependencies.
+- Firmware-backed IPC sessions and shared-memory channels must have a defined ownership transition from boot firmware to Linux.
+
+For an SoC containing an audio DSP, PCIe endpoint and storage controller, write down which boot stage owns each DMA engine and reserved-memory region. The kernel must not reuse memory while firmware or a device can still access it.
