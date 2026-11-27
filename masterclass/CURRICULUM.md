@@ -17,6 +17,8 @@ Lab: inspect an ELF binary and trace a system call.
 
 **Completed lesson:** [Lesson 02 — Linux Boot and Early Initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) covers the bootloader handoff, x86/arm64 entry paths, start_kernel(), initcalls, initramfs and PID 1. The archive/chroot lab passed; QEMU boot remains unverified.
 
+**Completed lesson:** [Lesson 03 — C, ELF, Linker and Kernel Build Foundations](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) covers kernel C types/annotations, structure layout, bit masks, ELF sections/symbols/relocations, linker scripts, Kconfig and Kbuild. The x86-64 ELF lab and an external module compile passed; see PROGRESS.md for exact toolchain and compatibility limits.
+
 ## Stage 1 — Kernel architecture and environment
 1. Kernel source tree and subsystem ownership
 2. Mainline, stable, LTS and vendor kernels
@@ -29,6 +31,8 @@ Lab: inspect an ELF binary and trace a system call.
 Lab: build and boot a kernel in QEMU; load a hello module.
 
 **Completed lesson:** [Lesson 02 — Linux Boot and Early Initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) introduces the boot and initramfs path; a full QEMU kernel boot remains a follow-up validation.
+
+**Completed lesson:** [Lesson 03 — C, ELF, Linker and Kernel Build Foundations](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) introduces the compiler/object/linker/Kbuild path and a safe external-module build.
 
 ## Stage 2 — Kernel C and essential APIs
 1. Kernel coding conventions and GNU C
