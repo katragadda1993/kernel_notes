@@ -12,6 +12,7 @@ A practical, source-driven path from foundations to advanced Linux kernel and ha
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 126 questions, including DMA, PCIe, interrupts, power management, ALSA, SoundWire and debugging scenarios.
 
 ## Curriculum map
 | Stage | Focus |
