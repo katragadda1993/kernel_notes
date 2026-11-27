@@ -40,3 +40,8 @@ This track follows a hardware driver's full lifecycle, not just its probe functi
 10. Upstream patch from issue reproduction through review-ready submission
 
 Each capstone must run in QEMU, a mock/test framework, or documented real hardware. Clearly mark hardware-dependent steps; never fabricate results.
+
+
+## Foundation prerequisite
+
+Before implementing a driver entry point, complete [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md). A driver request path begins in a syscall or subsystem interface, while hardware completion is commonly asynchronous through IRQs, polling or deferred work. Keep request context and completion context separate in every design and trace.
