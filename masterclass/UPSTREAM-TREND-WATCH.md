@@ -142,7 +142,7 @@ A single commit is a change, not necessarily a trend. Prefer evidence across mul
 ### Release and tree status
 
 - The current kernel.org search index still reports mainline **7.4-rc4** and stable **7.3.6**. It lists longterm releases including **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**. See [kernel.org](https://www.kernel.org/).
-- The current linux-next search index exposes **next-20261126**. This conflicts with the prior checkpoint's recorded next-20261127. The direct Gitiles page was cached at an older next-20261120 view, so the exact latest linux-next commit could not be independently confirmed in this run. Treat next-20261126 as the latest indexed tag, not a fully verified live checkout.
+- The current [kernel.org release index](https://www.kernel.org/) lists **next-20261127**, dated 2026-11-27, agreeing with the previous checkpoint. The direct Gitiles browse endpoint returned a cached next-20261120 page and its next-20261127 browse link returned HTTP 403; use the kernel.org index as the authoritative tag/date for this checkpoint. The exact tag commit hash was not retrievable in this run.
 - The current mainline repository index still lists [9437ee8b6cf607e883b36e44bd755968daaebd48](https://github.com/torvalds/linux/commit/9437ee8b6cf607e883b36e44bd755968daaebd48) as the master branch head, the net-7.4-rc5 pull from 2026-11-26. This was already recorded in the previous checkpoint. The published release index still says 7.4-rc4; merged mainline work is not automatically a released 7.4-rc5.
 
 ### Material delta
@@ -166,7 +166,7 @@ The previously recorded [arm64 fixes merge 822ba3a89c7896b26e4beb70e2ebffb881924
 - **Driver and firmware session lifetime — high confidence as a recurring correctness theme.** The TEE session/remove synchronization, USB teardown fixes and AF_XDP buffer-ownership fix are distinct subsystems but share a common engineering requirement: state and ownership must remain valid across asynchronous work and teardown.
 - **Boot-time translation ordering — a specific recent fix cluster, not yet a broad trend claim.** The arm64 pull contains multiple page-table, TLB and ISB corrections. Use it to teach architecture-specific ordering; do not generalize beyond the evidence.
 - **AI-assisted patch validation — emerging practice, medium confidence.** The ext4 pull's KUnit expansion and maintainer explanation remain a concrete example. No new evidence in this run changes the prior assessment.
-- **linux-next freshness — source confidence reduced.** The index and direct cached page disagree on the newest tag. Do not use this snapshot to claim a particular unmerged feature is present until the tag/commit is confirmed.
+- **linux-next integration snapshot — no new delta.** The kernel.org index still lists next-20261127, the same dated snapshot recorded previously. No newer linux-next tag was listed at the time checked; the tag's commit hash remains unverified because the browse endpoint returned 403.
 
 ### Next checkpoint requirements
 
