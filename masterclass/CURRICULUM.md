@@ -1,6 +1,6 @@
 # Complete Curriculum: Linux Kernel Programming from Basics to Advanced
 
-Each module should contain a lesson, kernel-source walkthrough, lab, debugging exercise and review questions.
+Each module should contain a lesson, kernel-source walkthrough, lab, debugging exercise and review questions. Track completion in [PROGRESS.md](PROGRESS.md).
 
 ## Stage 0 — Systems foundations
 1. OS responsibilities; user mode vs kernel mode
@@ -12,6 +12,8 @@ Each module should contain a lesson, kernel-source walkthrough, lab, debugging e
 7. Endianness, alignment, cache lines, barriers and atomics
 8. Shell, Git, Make, GCC/Clang, GDB and cross-compilation
 Lab: inspect an ELF binary and trace a system call.
+
+**Completed lesson:** [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) covers OS protection, CPU privilege states, system calls, exceptions and interrupts. Its x86-64 lab was built and run; arm64 and strace validation remain outstanding.
 
 ## Stage 1 — Kernel architecture and environment
 1. Kernel source tree and subsystem ownership
