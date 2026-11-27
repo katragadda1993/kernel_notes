@@ -3,7 +3,7 @@
 A practical, source-driven path from foundations to advanced Linux kernel and hardware-driver engineering.
 
 ## Current progress
-Lesson 01 is complete. The userspace syscall lab was built and run on x86-64; strace was unavailable in the authoring environment and the arm64 branch still needs a native arm64 validation. See [PROGRESS.md](PROGRESS.md).
+Lessons 01 and 02 are content-complete. The syscall lab ran on x86-64; the initramfs archive and chroot self-test passed. strace, arm64 execution and a QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
 
 ## Learning philosophy
 - Understand the concept, then inspect the implementation in kernel source.
@@ -15,12 +15,12 @@ Lesson 01 is complete. The userspace syscall lab was built and run on x86-64; st
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
-3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 136 source-backed questions, continuously expanding.
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 146 source-backed questions, continuously expanding.
 4. [Progress ledger](PROGRESS.md) — lesson completion and validation status.
-5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.
-6. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
-7. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
-8. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
+5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.\n6. [Lesson 02: Linux boot and early initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) — x86/arm64 entry, initcalls, initramfs and PID 1.
+7. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
+8. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
+9. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
 
 ## Curriculum map
 | Stage | Focus |
