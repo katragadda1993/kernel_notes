@@ -172,3 +172,78 @@ Prioritize Stages 0–6, then Stage 8 and Stage 9. Continue through other subsys
 
 ## Lesson cadence
 Break stages into focused 45–90 minute lessons. A lesson is complete only when its lab, expected output, failure cases and knowledge check are present. Link to exact upstream source revisions rather than copying large source files.
+
+
+## Stage 13 — Architecture, boot and advanced memory
+1. x86-64 and ARM64 exception entry, privilege levels and context switching
+2. SMP boot, CPU hotplug, topology, NUMA and cache locality
+3. TLB shootdowns, page-table locking and memory barriers
+4. Buddy allocator, SLUB internals, reclaim, compaction and huge pages
+5. Memory pressure, OOM, page migration and working-set behavior
+6. Early boot, initcalls, linker sections and initramfs handoff
+7. Boot-time failures, early console and panic triage
+Lab: trace a page fault and allocation path on a pinned kernel revision.
+
+## Stage 14 — Firmware and heterogeneous SoC integration
+1. remoteproc lifecycle, firmware loading and crash recovery
+2. RPMsg endpoints, virtio transport and shared-memory vrings
+3. Mailbox controller framework and interrupt-driven IPC
+4. SCMI protocols, transports and firmware-owned resources
+5. Shared memory, cache maintenance, IOMMU and DSP/accelerator access
+6. Power domains, interconnect bandwidth and device dependencies
+7. Secure firmware loading, authentication and version compatibility
+8. Debugging host/firmware ownership, timeouts and reset races
+Lab: build a host-side mock or QEMU-based IPC exercise; document what requires real hardware.
+
+## Stage 15 — eBPF and modern observability
+1. BPF architecture, bytecode, maps, helpers and program types
+2. Verifier model, BTF, CO-RE and kfuncs
+3. Tracepoints, fentry/fexit, kprobes, uprobes and perf events
+4. bpftrace and libbpf-based tooling
+5. sched_ext architecture and BPF-defined scheduling policy
+6. BPF performance, safety boundaries and production rollout
+Lab: instrument a driver or kernel subsystem without modifying its source.
+
+## Stage 16 — Virtualization and device assignment
+1. KVM, VM exits, vCPU lifecycle and virtual interrupts
+2. virtio, vhost and virtqueue descriptor ownership
+3. VFIO, IOMMU groups and device assignment
+4. SR-IOV, PF/VF lifecycle and isolation
+5. Guest/host memory mapping and DMA translation
+6. Virtualized device reset, migration and error recovery
+Lab: trace a virtio or VFIO data path in a VM.
+
+## Stage 17 — VFS, filesystems, storage and advanced networking
+1. VFS operation tables, inode/dentry lifetime and mount namespaces
+2. Page cache, writeback, direct I/O and filesystem consistency
+3. Block multiqueue, blk-mq scheduling and NVMe queue lifecycle
+4. TCP/IP receive/transmit paths, NAPI and SKB lifetime
+5. XDP, AF_XDP, zero-copy and NIC queue scaling
+6. RSS, RPS/RFS, IRQ affinity and NUMA-aware networking
+7. Lock contention, batching and high-throughput networking
+Lab: trace one I/O or packet end-to-end and measure the bottleneck.
+
+## Stage 18 — Rust for Linux and current kernel engineering
+1. Rust-for-Linux architecture, bindings and safe abstractions
+2. Driver support boundaries, pinning, ownership and FFI
+3. C/Rust interoperability and review expectations
+4. Stable API reality, subsystem interfaces and backport constraints
+5. Kernel CI, regression tracking and bisect workflows
+6. AI-assisted patch generation/review: evidence, validation and maintainer expectations
+7. Maintainer workflows, patch series quality and long-term maintenance
+Lab: inspect a merged Rust or core-kernel change and compare its C and Rust boundaries.
+
+## Cross-cutting capstone projects
+- Character driver with robust lifetime and concurrent access
+- Platform/Device Tree driver with MMIO, IRQ and runtime PM
+- DMAengine client with descriptor ownership and coherency tests
+- PCIe device lifecycle and AER/reset recovery analysis
+- Mock I2C/SPI driver with fault injection
+- ALSA PCM driver/path analysis with XRUN and latency diagnosis
+- remoteproc/RPMsg mailbox IPC design review
+- Driver teardown race and use-after-free investigation
+- Kernel performance regression bisect and trace-based root cause
+- Small upstream-quality patch with tests and review response
+
+## Trend-driven learning rule
+The curriculum is a stable foundation, not a frozen syllabus. Each run must inspect current mainline and linux-next activity, identify relevant merged changes, and add focused lessons when the change materially affects kernel architecture, APIs, drivers, performance, security or engineering practice. Do not turn every commit into a lesson; prioritize impact and explain why.
