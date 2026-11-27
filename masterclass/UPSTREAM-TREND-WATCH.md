@@ -119,7 +119,7 @@ A single commit is a change, not necessarily a trend. Prefer evidence across mul
 7. **Tracing and ext4 validation**  
    Classification: merged mainline.  
    Tracing merge: [2bad4ba5bd4ed7075c7e874cd30c52e07a74c8cc](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/2bad4ba5bd4ed7075c7e874cd30c52e07a74c8cc), 2026-11-25. It prevents KASAN from incorrectly checking certain stack reads and zeroes faulted probe dereference fields instead of leaving stale ring-buffer data.  
-   Ext4 post-merge fixes: [df99e82b36ff3c243ec3a06afc0ccaa4866a5a41](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/df99e82b36ff3c243ec3a06afc0ccaa4866a5a41), 2026-11-26. The merge fixes KUnit registration/test failures and a fast-commit/inline-data test failure after a prior ext4 pull.  
+   The earlier ext4 pull [4dce97c6c265544342e716e62fd24bbb232590c5](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/4dce97c6c265544342e716e62fd24bbb232590c5), 2026-11-24, added KUnit tests; its maintainer explicitly said those tests make it safer to validate AI-generated patches. Ext4 post-merge fixes: [df99e82b36ff3c243ec3a06afc0ccaa4866a5a41](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/df99e82b36ff3c243ec3a06afc0ccaa4866a5a41), 2026-11-26. The merge fixes KUnit registration/test failures and a fast-commit/inline-data test failure after a prior ext4 pull.  
    Engineering impact: observability tools must be safe around faults and instrumentation, and test suites themselves need regression coverage after subsystem merges.
 
 ### Trend observations and confidence
