@@ -4,7 +4,7 @@
 **Duration:** 60–75 minutes  
 **Level:** Beginner → intermediate, with architecture-level source reading  
 **Source revision:** Linux mainline tag [v7.4-rc4](https://github.com/torvalds/linux/tree/v7.4-rc4)  
-**Lab:** [syscall_lab.c](syscall_lab.c) · [Makefile](Makefile)
+**Lab:** [syscall_lab.c](lesson-01-user-kernel-boundary/syscall_lab.c) · [Makefile](lesson-01-user-kernel-boundary/Makefile)
 
 ## 1. Learning objectives
 
