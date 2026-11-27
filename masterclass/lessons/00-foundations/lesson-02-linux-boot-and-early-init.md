@@ -299,7 +299,7 @@ This lab creates a small root filesystem with BusyBox, a PID 1 script, and a com
 
 ~~~sh
 cd masterclass/lessons/00-foundations/lesson-02-linux-boot-and-early-init
-sudo ./build-initramfs.sh ./initramfs.cpio.gz
+sudo bash ./build-initramfs.sh ./initramfs.cpio.gz
 ~~~
 
 The script:
