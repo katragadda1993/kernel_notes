@@ -12,7 +12,10 @@ A practical, source-driven path from foundations to advanced Linux kernel and ha
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
-3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 126 questions, including DMA, PCIe, interrupts, power management, ALSA, SoundWire and debugging scenarios.
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — continuously expanding, source-backed interview preparation.
+4. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
+5. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
+6. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
 
 ## Curriculum map
 | Stage | Focus |
@@ -30,6 +33,20 @@ A practical, source-driven path from foundations to advanced Linux kernel and ha
 | 10 | Tracing, sanitizers, static analysis and testing |
 | 11 | Performance, reliability, security and power optimization |
 | 12 | Upstream contribution and patch review |
+| 13 | Architecture-specific internals, advanced memory and boot internals |
+| 14 | Firmware, heterogeneous SoCs, remoteproc, RPMsg, mailbox and SCMI |
+| 15 | eBPF, observability and programmable scheduling (sched_ext) |
+| 16 | Virtualization, KVM, virtio, VFIO and SR-IOV |
+| 17 | Security, VFS/filesystems and advanced storage/networking |
+| 18 | Rust for Linux, modern kernel engineering and upstream trend analysis |
+
+## Learning paths
+1. Linux foundations and kernel internals
+2. Device-driver engineering
+3. Hardware and SoC integration
+4. Debugging, observability and performance
+5. Security, virtualization and systems subsystems
+6. Kernel architecture, upstream engineering and source archaeology
 
 ## Target repository structure
 - labs/: progressively harder, runnable examples
