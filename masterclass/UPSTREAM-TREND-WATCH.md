@@ -135,3 +135,42 @@ A single commit is a change, not necessarily a trend. Prefer evidence across mul
 - linux-next remains at next-20261127, so there is no new integration snapshot to compare yet.
 - The previous checkpoint recorded v7.4-rc4 as the latest release tag. This checkpoint adds the mainline master-branch 7.4-rc5 subsystem pulls now visible on Nov25–27, while retaining the distinction that the published release tag is still v7.4-rc4.
 - The next run should compare against commit e5aad2bdbbee783611d32599f89cea3f12f9593d for linux-next and the latest recorded mainline commit links above. Do not re-report these as new unless later commits change the status or implementation.
+
+
+## Checkpoint 2026-11-28 04:14 IST — Lesson 02 run
+
+### Release and tree status
+
+- The current kernel.org search index still reports mainline **7.4-rc4** and stable **7.3.6**. It lists longterm releases including **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**. See [kernel.org](https://www.kernel.org/).
+- The current linux-next search index exposes **next-20261126**. This conflicts with the prior checkpoint's recorded next-20261127. The direct Gitiles page was cached at an older next-20261120 view, so the exact latest linux-next commit could not be independently confirmed in this run. Treat next-20261126 as the latest indexed tag, not a fully verified live checkout.
+- The current mainline repository index still lists [9437ee8b6cf607e883b36e44bd755968daaebd48](https://github.com/torvalds/linux/commit/9437ee8b6cf607e883b36e44bd755968daaebd48) as the master branch head, the net-7.4-rc5 pull from 2026-11-26. This was already recorded in the previous checkpoint. The published release index still says 7.4-rc4; merged mainline work is not automatically a released 7.4-rc5.
+
+### Material delta
+
+No new mainline merge after the previous checkpoint's latest confirmed mainline set was established in this run. The previously recorded core-MM, arm64, networking, USB, tracing, ext4, sched_ext and DMA/driver changes remain relevant. Do not relabel them as newly merged.
+
+### Supplemental mainline change now highlighted
+
+**Trusted keys and TEE session lifetime**  
+Classification: merged mainline during the 7.4-rc5 development cycle; already in the history leading into the previous checkpoint, not a new delta for this run.  
+Commit: [5888d706750d0e5dce374c01d2c656bbfe2045be](https://github.com/torvalds/linux/commit/5888d706750d0e5dce374c01d2c656bbfe2045be), 2026-11-27.  
+The pull fixes trusted-key backend static-call initialization before backend init, synchronizes TEE session lifetime against device removal, disables sysfs bind/unbind for the affected TEE device path, propagates CAAM option parse errors, adds user-buffer bounds checks in public-key keyctl operations and uses kfree_sensitive() for temporary sensitive buffers.  
+Driver/SoC impact: firmware-backed sessions are resources with a lifetime that must be serialized against device unbind/remove. This is directly relevant to TEE, secure key storage, mailbox-backed firmware services and any driver exposing a session through sysfs. It reinforces the already observed lifecycle trend alongside USB remove-path and DMA ownership fixes.
+
+### Lesson connection: early boot ordering and arm64 translation
+
+The previously recorded [arm64 fixes merge 822ba3a89c7896b26e4beb70e2ebffb881924dfe](https://github.com/torvalds/linux/commit/822ba3a89c7896b26e4beb70e2ebffb881924dfe) includes an ISB after mapping the FDT in the initial identity map, break-before-make handling for fixmap entries and barrier changes. This is a concrete example of why boot-time page-table visibility, TLB maintenance and instruction synchronization must be reasoned about separately. It is merged mainline work in the 7.4-rc5 development cycle, not a claim that a 7.4-rc5 release tag exists.
+
+### Trend observations
+
+- **Driver and firmware session lifetime — high confidence as a recurring correctness theme.** The TEE session/remove synchronization, USB teardown fixes and AF_XDP buffer-ownership fix are distinct subsystems but share a common engineering requirement: state and ownership must remain valid across asynchronous work and teardown.
+- **Boot-time translation ordering — a specific recent fix cluster, not yet a broad trend claim.** The arm64 pull contains multiple page-table, TLB and ISB corrections. Use it to teach architecture-specific ordering; do not generalize beyond the evidence.
+- **AI-assisted patch validation — emerging practice, medium confidence.** The ext4 pull's KUnit expansion and maintainer explanation remain a concrete example. No new evidence in this run changes the prior assessment.
+- **linux-next freshness — source confidence reduced.** The index and direct cached page disagree on the newest tag. Do not use this snapshot to claim a particular unmerged feature is present until the tag/commit is confirmed.
+
+### Next checkpoint requirements
+
+- Recheck kernel.org, the mainline master ref and the linux-next tag/commit when the mirror is fresh.
+- Compare against mainline merge 9437ee8 and the already-recorded arm64/MM merges; do not duplicate them.
+- Follow the TEE trusted-session lifetime fix through the source diff and related driver tests if a relevant new pull appears.
+- Continue the curriculum with Lesson 03; no upstream-derived lesson is justified solely by the lack of new merge activity.
