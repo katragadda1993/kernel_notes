@@ -64,3 +64,22 @@ Use this as a review exercise:
 - Separate allocation count, mapping count, completion count and cleanup iterator.
 - Prove that only successfully mapped buffers are handed to hardware.
 - Exercise partial allocation and partial mapping failures.
+
+
+## Current case study: bootloader handoff and early userspace
+
+### x86 boot protocol evolution — documented history
+
+The [v7.4-rc4 x86 boot protocol document](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/arch/x86/boot.rst) explicitly attributes the protocol's complexity to the historical PC memory model, the bootable-image requirement and changing firmware/PC expectations. It records protocol 2.00 as adding bzImage and initrd support with a formal bootloader handoff, and later revisions as adding relocatability, command-line capacity and high-memory support.
+
+### initramfs versus initrd — code-history evidence
+
+The [initramfs buffer-format document](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/driver-api/early-userspace/buffer-format.rst) says the initramfs protocol complemented the older initial ramdisk protocol in the 2.5 development series. A [2014 LZ4 decompression fix](https://github.com/torvalds/linux/commit/4d4b866aee039d609c0b40e7e5b27204607ce614) explains the different input paths used for preboot, initramfs and initrd. This is evidence that the two formats have distinct data-handling semantics, not merely different names.
+
+### arm64 boot-time page-table ordering — merged mainline evidence
+
+[Commit 822ba3a89c7896b26e4beb70e2ebffb881924dfe](https://github.com/torvalds/linux/commit/822ba3a89c7896b26e4beb70e2ebffb881924dfe) adds an ISB after mapping the FDT in the initial identity map and fixes break-before-make/barrier behavior for fixmap and KPTI-related mappings. The maintainer pull message identifies these as missing ordering requirements. The engineering lesson is that writing a page-table entry, making a translation visible to other observers, invalidating stale TLB state and synchronizing instruction execution are separate obligations.
+
+### Engineering interpretation
+
+Early userspace reduces the need to place every storage, network, filesystem and device-discovery workflow inside the kernel. It does not remove the need for those drivers: the kernel must still have enough built-in support to expose the devices needed to load the modules and mount the real root. The right built-in-versus-module decision depends on the dependency chain and failure-recovery requirements.
