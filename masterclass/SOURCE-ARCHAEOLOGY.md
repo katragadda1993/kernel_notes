@@ -83,3 +83,23 @@ The [initramfs buffer-format document](https://github.com/torvalds/linux/blob/v7
 ### Engineering interpretation
 
 Early userspace reduces the need to place every storage, network, filesystem and device-discovery workflow inside the kernel. It does not remove the need for those drivers: the kernel must still have enough built-in support to expose the devices needed to load the modules and mount the real root. The right built-in-versus-module decision depends on the dependency chain and failure-recovery requirements.
+
+
+## Current case study: initcall order is part of the build contract
+
+[Commit 20dff14006b189baf05011b44e785d100458cc95](https://github.com/torvalds/linux/commit/20dff14006b189baf05011b44e785d100458cc95), merged 2026-10-06, explains a real dependency between network initialization functions. A previous arrangement put inet6_init() at device_initcall level. The commit explains that blackhole_netdev_init() had to run first, and that built-in driver initialization at the same level could otherwise precede a consumer that expected blackhole_netdev to exist. The fix explicitly orders blackhole_netdev_init() at subsys_initcall_sync(), inet_init() at fs_initcall(), and inet6_init() at fs_initcall_sync().
+
+The source commit also explains why an earlier stack trace had led to an inaccurate description of the race. This is a useful source-archaeology lesson: read the commit message and trace the actual dependency rather than repeating a shorthand explanation.
+
+**Engineering lesson:** Kbuild object order and linker-collected initcall sections can influence when built-in initialization runs. Prefer explicit framework dependencies or appropriate initcall levels over relying on incidental ordering.
+
+## Current case study: GNU Make jobserver and Clang LTO
+
+[Commit ae5f6044c4cdffe2b3361b15c1d6fc67b339f2a4](https://github.com/torvalds/linux/commit/ae5f6044c4cdffe2b3361b15c1d6fc67b339f2a4), merged 2026-10-11, fixes a Kbuild recipe that generated initcall ordering for Clang LTO. After an earlier refactor moved the command into a different Makefile recipe, it no longer had the recursive-recipe '+' prefix. GNU Make therefore did not pass its jobserver pipe to the child process. The helper could not reopen the jobserver and fell back to a CPU-count-based parallelism limit rather than the available free job slots.
+
+The fix restores the '+' prefix. The commit includes a concrete reproduction context (x86_64 defconfig, CONFIG_LTO_CLANG_THIN, LLVM=1 and GNU Make 4.3 with a close-on-exec backport), a Fixes reference, review and testing tags, and an Assisted-by: LLM attribution.
+
+**Documented fact:** the commit message describes the missing jobserver descriptor and the exact Makefile change.  
+**Engineering interpretation:** build-system correctness includes process/FD inheritance and jobserver semantics, not only compiler flags. An AI-assisted patch is still subject to a reproducible failure, review and testing evidence.
+
+Related review discussion: [Kees Cook's initcall-ordering discussion](https://lore.kernel.org/all/CAK7LNARCM=rUm8mA8GRQ7ufeyfneGf4OEvHmESKt=zuxs2KrHw@mail.gmail.com/).
