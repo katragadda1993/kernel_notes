@@ -174,3 +174,71 @@ The previously recorded [arm64 fixes merge 822ba3a89c7896b26e4beb70e2ebffb881924
 - Compare against mainline merge 9437ee8 and the already-recorded arm64/MM merges; do not duplicate them.
 - Follow the TEE trusted-session lifetime fix through the source diff and related driver tests if a relevant new pull appears.
 - Continue the curriculum with Lesson 03; no upstream-derived lesson is justified solely by the lack of new merge activity.
+
+
+## Checkpoint 2026-11-28 05:15 IST — post-Lesson 02 upstream delta
+
+### Release and integration status
+
+- [kernel.org](https://www.kernel.org/) still lists mainline **7.4-rc4** (2026-11-22) and stable **7.3.6** (2026-11-23). Longterm releases shown include **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**.
+- The latest linux-next tag listed remains **next-20261127** (2026-11-27). No next-20261128 tag is listed on the kernel.org index. The exact linux-next commit was not independently retrieved in this run.
+- The latest merge returned by the mainline commit search was [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e), the thermal-7.4-rc5 pull. The following changes are merged into mainline master after the previous 04:14 IST checkpoint, but kernel.org still publishes 7.4-rc4. Do not call them released 7.4-rc5 features.
+
+### Selected mainline changes since the prior checkpoint
+
+1. **ALSA/ASoC: PCM buffer lifetime, locking and stream-state fixes**  
+   Classification: merged mainline; not yet in a new published release tag.  
+   Merge: [16a4afe366a22507ccb7b3302f956e6404aeb4b6](https://github.com/torvalds/linux/commit/16a4afe366a22507ccb7b3302f956e6404aeb4b6), sound-7.4-rc5, 2026-11-27.  
+   The pull summary lists a potential ABBA deadlock in snd_pcm_action_nonatomic(), prevention of hw_params/hw_refine changes while PCM buffer access is active, a buffer-access gate refactor using scope-based cleanup, timer-flag locking, and USB-audio URB list corruption after stop. ASoC fixes include FSL ASRC/EASRC memory safety, pair/context ownership on repeated hw_params, and FIFO drain bounds. It also includes Tegra268 ADMAIF driver and binding additions.  
+   Engineering impact: audio buffer lifetime must be protected across userspace read/write/mmap and DMA synchronization. Repeated hw_params and stop/close transitions need explicit state and ownership rules. A PCM period buffer cannot be reallocated while a concurrent access/sync path still holds it.
+
+2. **IOMMU: cache coherency, hard-IRQ runtime PM and failed domain deletion**  
+   Classification: merged mainline; not yet in a new published release tag.  
+   Merge: [8c8611425a367d250339cdb05aa898971d35abdb](https://github.com/torvalds/linux/commit/8c8611425a367d250339cdb05aa898971d35abdb), 2026-11-27.  
+   AMD IOMMU v2 page tables are marked DMA-incoherent on affected Cezanne hardware so CPU cache lines are flushed. VeriSilicon IOMMU fixes include avoiding pm_runtime_resume_and_get() from a hard IRQ path, using pm_runtime_get_if_active(), balancing runtime-PM references, flushing the TLB on resume, correcting domain-switch locking and unwinding clocks when IRQ lookup fails. Hyper-V IOMMU retains a domain's page tables and ID if the hypervisor fails to delete the domain, because the hypervisor may still access them.  
+   Engineering impact: the IOMMU page tables themselves have a coherency contract; this is distinct from the payload DMA mapping. Runtime PM callbacks must not sleep in hard IRQ context. If hardware/firmware refuses to relinquish a translation domain, freeing the backing page tables can become a use-after-free visible to the device.
+
+3. **GPIO: chip removal, IRQ ownership and resume output ordering**  
+   Classification: merged mainline; not yet in a new published release tag.  
+   Merge: [3852adbb01116275eadf41c67af5ef68abe9755a](https://github.com/torvalds/linux/commit/3852adbb01116275eadf41c67af5ef68abe9755a), gpio fixes for v7.4-rc5, 2026-11-27.  
+   The pull fixes IRQ and label lifetime around gpiochip removal, avoids sleeping inside an SRCU read-side section in a GPIO read path, handles pending requests during chip removal, and fixes driver-specific use-after-free/resource issues. The PCA953x resume path now restores output levels before changing direction to outputs, avoiding a transient power-on output level.  
+   Engineering impact: IRQ numbers and descriptors can be reused after device removal, so teardown must stop event sources while the old chip/request relationship is still serialized. Register restore order is electrically observable: direction-before-output can momentarily drive an unintended level.
+
+4. **CPU frequency and system resume: lock ordering and hotplug refresh**  
+   Classification: merged mainline; not yet in a new published release tag.  
+   Merge: [2cf42c49089d09e6b2a1dc35186f15721fe18c9c](https://github.com/torvalds/linux/commit/2cf42c49089d09e6b2a1dc35186f15721fe18c9c), pm-7.4-rc5, 2026-11-27.  
+   The intel_pstate changes introduce a dedicated lock for the power-control MSR update path to avoid lockdep complaints on system resume, serialize a no_turbo update against CPU online, and refresh cpuinfo.max_freq when a CPU comes online.  
+   Engineering impact: runtime configuration, system resume and CPU hotplug can race. A lock chosen for one call path may be held in a different order on resume; policy values cached while a CPU is offline may be stale when it returns.
+
+5. **Thermal sysfs: serialize access to thermal-zone parameters**  
+   Classification: merged mainline; latest merge observed in this checkpoint.  
+   Merge: [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e), thermal-7.4-rc5, 2026-11-27.  
+   The change adds thermal-zone locking in sustainable_power show/store and related trip/hysteresis attribute handlers before accessing tzp. The pull description identifies a possible NULL dereference in the thermal sysfs interface.  
+   Engineering impact: sysfs callbacks can race with device/zone reconfiguration or teardown. A pointer check without a lifetime/serialization guarantee is not sufficient.
+
+6. **Staging: removal of an unused VME user driver**  
+   Classification: merged mainline; not yet in a new published release tag.  
+   Merge: [6cce17ffe54a9fdcadbadfd59c00de7ac2cba25d](https://github.com/torvalds/linux/commit/6cce17ffe54a9fdcadbadfd59c00de7ac2cba25d), staging-7.4-rc5, 2026-11-27.  
+   The maintainer removed vme_user, stating there were no users and that AI-generated security-bug reports were creating review churn despite lack of real use. The pull says the removal had been in linux-next without reported issues.  
+   Engineering impact: long-term maintenance cost, real hardware usage and verifiable reports matter. Static-analysis/LLM findings should be triaged and reproduced; they should not automatically force changes to unmaintained code.
+
+### Trend observations
+
+- **Resource lifetime and synchronization — high confidence, recurring across subsystems.** ALSA buffer access, GPIO IRQ/chip removal, IOMMU domain deletion and thermal sysfs locking are separate fixes with a common requirement: protect an object for the entire operation, not only at pointer lookup.
+- **IOMMU and DMA coherency — high relevance, hardware-specific evidence.** The AMD Cezanne page-table flush fix shows that IOMMU translation structures can have their own cache-coherency requirements. This is not the same as synchronizing the payload buffer.
+- **Runtime PM must respect execution context — high confidence.** The VeriSilicon hard-IRQ change and CPU-frequency resume fixes show that PM callbacks, locks and CPU hotplug have to be analyzed together.
+- **Audio pipeline memory/state correctness — medium-high confidence.** ALSA PCM buffer gating, USB-audio URB lifecycle and ASoC ASRC ownership fixes reinforce that stream stop/reconfigure/close must serialize with active buffer users and asynchronous completions.
+- **AI-assisted code triage and project sustainability — emerging practice.** A maintainer explicitly cited AI-generated false-positive churn in the VME removal discussion. Treat AI reports as hypotheses requiring a reproducer, code-path proof and maintainer review.
+
+### Lesson connection
+
+Lesson 03 explains why Kbuild, type annotations, object layout and link order are runtime concerns. The ALSA and IOMMU changes are good follow-up reading:
+- For ALSA, trace buffer-access lifetime and hw_params/hw_free serialization in the sound merge diff.
+- For IOMMU, compare CPU cache maintenance for translation tables with DMA API synchronization for payload buffers.
+- For GPIO, trace IRQ/request lifetime from userspace line request through gpiochip removal.
+
+### Next checkpoint
+
+- Compare against mainline merge [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e) and the selected sound/IOMMU/GPIO/PM merges above.
+- Recheck kernel.org for a new mainline release tag and linux-next snapshot.
+- Do not repeat these as new unless a later merge changes the implementation or status.
