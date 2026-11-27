@@ -1,0 +1,6 @@
+config MASTERCLASS_HELLO
+	tristate "Linux kernel masterclass hello module"
+	help
+	  Small example used to study Kconfig and Kbuild.
+	  This fragment is illustrative; the external module lab
+	  builds with obj-m and does not modify a kernel source tree.
