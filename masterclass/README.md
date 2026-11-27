@@ -15,7 +15,7 @@ Lesson 01 is complete. The userspace syscall lab was built and run on x86-64; st
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
-3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — continuously expanding, source-backed interview preparation.
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 136 source-backed questions, continuously expanding.
 4. [Progress ledger](PROGRESS.md) — lesson completion and validation status.
 5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.
 6. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
