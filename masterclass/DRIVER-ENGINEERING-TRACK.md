@@ -44,7 +44,7 @@ Each capstone must run in QEMU, a mock/test framework, or documented real hardwa
 
 ## Foundation prerequisite
 
-Before implementing a driver entry point, complete [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md). A driver request path begins in a syscall or subsystem interface, while hardware completion is commonly asynchronous through IRQs, polling or deferred work. Keep request context and completion context separate in every design and trace.
+Before implementing a driver entry point, complete [Lesson 01 — The User/Kernel Boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) and [Lesson 02 — Linux Boot and Early Initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md). A driver request path begins in a syscall or subsystem interface, while hardware completion is commonly asynchronous through IRQs, polling or deferred work. Lesson 02 adds the earlier bootloader-to-kernel hardware ownership contract, including DMA quiescence, firmware descriptions and initramfs driver availability. Keep request context and completion context separate in every design and trace.
 
 
 ## Boot-time driver availability and firmware handoff
