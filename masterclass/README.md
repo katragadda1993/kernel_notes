@@ -17,7 +17,8 @@ Lessons 01 and 02 are content-complete. The syscall lab ran on x86-64; the initr
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
 3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 146 source-backed questions, continuously expanding.
 4. [Progress ledger](PROGRESS.md) — lesson completion and validation status.
-5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.\n6. [Lesson 02: Linux boot and early initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) — x86/arm64 entry, initcalls, initramfs and PID 1.
+5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.
+6. [Lesson 02: Linux boot and early initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) — x86/arm64 entry, initcalls, initramfs and PID 1.
 7. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
 8. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
 9. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
