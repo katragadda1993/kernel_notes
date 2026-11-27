@@ -41,3 +41,26 @@ Learn not only what the kernel does, but why the design evolved.
 - [Kernel releases](https://www.kernel.org/category/releases.html)
 
 Never infer intent solely from a commit title. Do not attribute proprietary hardware design rationale to upstream maintainers without direct evidence.
+
+
+## Current case study: DMA-mask workaround versus platform capability
+
+**Question:** How can a hardware workaround make a driver fail to probe on a platform where the device previously worked?
+
+- Earlier change: [614f4d166eee — set a 31-bit coherent mask for BCM57766](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/614f4d166eee).
+- Follow-up fix: [686b8dbcedf8773dc505f9f315a0551c0bca70a3](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/686b8dbcedf8773dc505f9f315a0551c0bca70a3).
+- Original maintainer patch explanation: [netdev discussion](https://lists.openwall.net/netdev/2026/11/08/62).
+
+The patch explains that direct DMA support can reject a 31-bit coherent mask when physical memory extends above 2 GiB and CONFIG_ZONE_DMA is absent. The revised driver treats the mask as best-effort and falls back when it is unsupported, while logging the condition.
+
+**Evidence-based lesson:** a device workaround must be evaluated against the DMA API and platform topology. A driver should distinguish “the workaround cannot be applied” from “the device cannot function at all,” and should report any remaining erratum exposure.
+
+## Current case study: AF_XDP buffer ownership in a failure path
+
+[dpaa2-eth commit 25faec9ce61c01fb45abf812a222c5b43c3cd5c5](https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git/+/25faec9ce61c01fb45abf812a222c5b43c3cd5c5) documents how simplifying cleanup after an objtool warning exposed a real ownership bug. A loop index was also the count of successfully mapped buffers; using it for cleanup changed the ownership count and could cause buffers to be released to hardware after being freed.
+
+Use this as a review exercise:
+- Identify every state transition for each buffer.
+- Separate allocation count, mapping count, completion count and cleanup iterator.
+- Prove that only successfully mapped buffers are handed to hardware.
+- Exercise partial allocation and partial mapping failures.
