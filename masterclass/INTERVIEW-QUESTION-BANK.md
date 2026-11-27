@@ -189,3 +189,35 @@ For each driver design question, answer these:
 ## Expansion rule for future lessons
 
 Every new lesson should add at least 10 related interview questions: 4 fundamentals, 3 implementation/source questions, 2 debugging scenarios and 1 design/trade-off question. Include concise answer guidance and link the questions to the relevant lesson.
+
+## 12. Lesson 01 — User/kernel boundary, system calls and entry paths (Questions 127–136)
+
+**127. [Beginner | Fundamentals] What enforces the user/kernel privilege boundary?**  
+Answer checkpoint: CPU privilege state, MMU/page-table permissions and controlled exception-entry mechanisms enforce it. A C convention alone is not a security boundary.
+
+**128. [Beginner | Fundamentals] How does a system call differ from a hardware interrupt?**  
+Answer checkpoint: A syscall is a deliberate synchronous request from the running program. A hardware IRQ is asynchronous and is raised by a timer or device. They have different entry causes and handling paths.
+
+**129. [Intermediate | Fundamentals] What are the native x86-64 Linux syscall argument registers?**  
+Answer checkpoint: RAX holds the number; RDI, RSI, RDX, R10, R8 and R9 hold arguments 0–5. RCX and R11 are used by SYSCALL for return RIP and flags.
+
+**130. [Intermediate | Fundamentals] What are the native arm64 Linux syscall registers?**  
+Answer checkpoint: X8 holds the syscall number; X0–X5 hold arguments; X0 carries the return value. SVC #0 causes the EL0→EL1 synchronous exception.
+
+**131. [Intermediate | Source/API] Why does x86-64 entry assembly switch stacks even though SYSCALL has already entered kernel privilege?**  
+Answer checkpoint: SYSCALL does not change RSP. Linux must save the user stack pointer and select a trusted per-task kernel stack before using the stack for kernel frames and C calls.
+
+**132. [Advanced | Source/API] In v7.4-rc4, why is it inaccurate to say x86-64 dispatch always indexes sys_call_table[]?**  
+Answer checkpoint: arch/x86/entry/syscall_64.c documents that the array is retained for tracing metadata; x64_sys_call() dispatches through a switch generated from syscall definitions.
+
+**133. [Intermediate | Source/API] How does arm64 distinguish SVC from a page fault in the EL0 synchronous handler?**  
+Answer checkpoint: el0t_64_sync_handler() reads ESR_EL1, decodes the exception class and routes SVC64 to el0_svc(), while abort classes use data/instruction-abort handlers.
+
+**134. [Intermediate | Debugging] clock_gettime() is absent from strace. Does that prove the program did not read the clock?**  
+Answer checkpoint: No. The vDSO can serve clock_gettime in userspace. Compare with an explicit syscall(SYS_clock_gettime, ...), and inspect the process ABI and tracing configuration.
+
+**135. [Advanced | Debugging] A syscall returns ENOSYS on one target but works on another. What do you inspect first?**  
+Answer checkpoint: Running architecture and ABI, syscall number/table for that kernel revision, compatibility mode, kernel configuration and seccomp filters. ENOSYS alone does not prove the feature is absent.
+
+**136. [Advanced | Architecture/trade-off] Why does x86-64 use SYSRET only when the saved state satisfies strict conditions and otherwise fall back to IRET?**  
+Answer checkpoint: SYSRET is a fast path with narrower assumptions about return RIP, flags and selectors. IRET handles more general saved state and is required for exceptional/compatibility cases; correctness wins over the fast path.
