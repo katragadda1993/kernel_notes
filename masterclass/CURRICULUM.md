@@ -34,6 +34,8 @@ Lab: build and boot a kernel in QEMU; load a hello module.
 
 **Completed lesson:** [Lesson 03 — C, ELF, Linker and Kernel Build Foundations](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) introduces the compiler/object/linker/Kbuild path and a safe external-module build.
 
+**Completed lesson:** [Lesson 04 — Linux Kernel Source Tree, Configuration and Reproducible Builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) covers source ownership, MAINTAINERS, Kconfig dependencies, config fragments, Kbuild output trees, ARCH/toolchain selection and build provenance. Its audit helper was syntax-checked and exercised against a mock fixture; a real full kernel build remains unverified.
+
 ## Stage 2 — Kernel C and essential APIs
 1. Kernel coding conventions and GNU C
 2. Kernel types: size_t, phys_addr_t, dma_addr_t and __iomem
