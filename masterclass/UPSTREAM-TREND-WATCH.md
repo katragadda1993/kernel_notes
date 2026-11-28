@@ -345,3 +345,46 @@ Lesson 06 teaches the API-level decision. Follow it with the pinned v7.4-rc4 sou
 - Re-query Linus's mainline merge history; note mirror divergence and use exact merge hashes when available.
 - Do not repeat the memory merges above as new unless a subsequent commit changes the behavior.
 - Continue with Lesson 07 — Kernel Object Lifetime, References and Error Unwinding.
+
+
+## Checkpoint 2026-11-28 09:10 IST — new io_uring/hwmon merges; checkpoint reconciliation
+
+### Release and integration status
+
+- The [kernel.org release index](https://www.kernel.org/) still lists published mainline **7.4-rc4** (2026-11-22), stable **7.3.6** (2026-11-23), and LTS **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**.
+- The official index still lists **linux-next next-20261127**. No next-20261128 snapshot is visible at this checkpoint.
+- The latest visible Linus mainline commit in the GitHub commits history is the [io_uring pull 7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046](https://github.com/torvalds/linux/commit/7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046), committed 2026-11-28 02:56:58 UTC (08:26:58 IST). It is a merged mainline development commit; the public release index still says 7.4-rc4, so do not call this a released 7.4-rc5 feature.
+
+### Upstream briefing
+
+**New since the prior 08:12 IST checkpoint:**
+
+1. **Merged mainline — io_uring fixes, 7.4 development:** [7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046](https://github.com/torvalds/linux/commit/7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046), committed 08:26:58 IST. Includes [a905ff43362e80590e54f6ea9ddb2d1a998aa01c](https://github.com/torvalds/linux/commit/a905ff43362e80590e54f6ea9ddb2d1a998aa01c), which moves the full io_ring_ctx_free() teardown to RCU work so fields are not dismantled while task-work readers can still inspect them; and [6f3159575d53eed2d54557aef2dd8373da7c0208](https://github.com/torvalds/linux/commit/6f3159575d53eed2d54557aef2dd8373da7c0208), which drains cached task_struct references on ring release. Hardware/driver relevance: asynchronous queue teardown, cached references and callbacks are analogous to firmware/DSP/PCIe queue lifetime. This is merged mainline development, not yet a released stable feature.
+2. **Merged mainline — hwmon fixes, 7.4 development:** [ad5b48d7188721ba3a7a351d06a78f8030148e61](https://github.com/torvalds/linux/commit/ad5b48d7188721ba3a7a351d06a78f8030148e61), committed 08:23:49 IST. Includes a probe check corrected for single-collection Aquaero interfaces, half-precision PMBus peak comparisons, Lenovo dual-fan ACPI paths and a missing platform module alias. Driver lesson: validate firmware/interface cardinality before indexing optional collections, and ensure bus aliases exist for module autoload.
+
+**Checkpoint reconciliation — merged before 08:12 IST but absent from the prior checkpoint's summary (not new after that checkpoint):**
+
+3. **Merged mainline — workqueue drain fix:** [94ff2d27fafad99c63c02ab4d7e148c37e4eff80](https://github.com/torvalds/linux/commit/94ff2d27fafad99c63c02ab4d7e148c37e4eff80), included in the [workqueue pull](https://github.com/torvalds/linux/commit/e1faf0ed38d4f9b4ca75149428c78cf954586450). A drain pass could miss a chained work item queued onto another pwq and return before the queue was truly empty. The fix tracks started work and rechecks pwqs. The [maintainer report](https://lkml.iu.edu/hypermail/linux/kernel/2611.3/04049.html) includes reproducers and the destroy/leak failure.
+4. **Merged mainline — tracing fixes:** [673af170ceca345ce010aeeb1818172844f6b8c9](https://github.com/torvalds/linux/commit/673af170ceca345ce010aeeb1818172844f6b8c9). Includes atomic bitops/READ_ONCE for a trace-event flags race and fixes for ftrace recursion records and user-event fork failure.
+5. **Merged mainline — BPF security/correctness fixes:** [d3a5ea8a82fabeb2314700c2e001130faf99df1f](https://github.com/torvalds/linux/commit/d3a5ea8a82fabeb2314700c2e001130faf99df1f). The pull summary describes verifier type/attach checks, CAP_PERFMON requirements where CAP_BPF alone exposed kernel addresses or task operations, speculation barriers, NULL checks and clearing uninitialized data in skb/XDP/socket helpers.
+6. **Merged mainline — DRM fixes:** [c639ac6b9cf100b860408a3cf8d7eab268866cd7](https://github.com/torvalds/linux/commit/c639ac6b9cf100b860408a3cf8d7eab268866cd7). Includes dma-fence error-check ordering, TTM LRU cleanup on shutdown, unregistering hwmon before device unplug, GPU error-path/fence accounting and a V3D double-free fix.
+
+The three reconciliation merges above have timestamps earlier than the previous 08:12 IST checkpoint. They are documented now because the earlier search missed them; they are not represented as new post-checkpoint activity.
+
+### Trend observations
+
+- **Object lifetime and teardown — high confidence, recurring:** io_uring now provides fresh evidence for full teardown after an RCU grace period and explicit draining of cached task references; the workqueue fix demonstrates that chained callbacks can outlive an apparently empty drain pass. DRM's device-unplug and double-free fixes reinforce the same requirement.
+- **RCU versus reference counting — high confidence:** RCU protects readers traversing a published pointer; a kref protects a successfully acquired object beyond the read-side section. Deferring only the outer free is insufficient if members are torn down while readers still access them.
+- **BPF verifier/security hardening — confirmed merged activity:** attach-type, pointer, capability and uninitialized-data checks continue to evolve. Treat verifier acceptance as a safety boundary that itself needs regression tests.
+- **Driver probe and firmware-description validation — recurring:** the hwmon collection-count fix and module alias correction show that firmware/interface topology and module autoload are part of correct probe behavior, not incidental packaging.
+
+### Validation and limits
+
+- The latest mainline list was checked through the GitHub commits page and GitHub commit search; exact mainline tip was not fetched from git.kernel.org in this run.
+- The official kernel.org index provides the current published release and linux-next snapshot. Direct linux-next Git object/hash was not independently queried; no newer snapshot than next-20261127 was visible.
+- No proposed patch or linux-next-only change is presented as merged/released functionality here.
+- The sequential curriculum continues with Lesson 08 — Execution Contexts and Synchronization. The new io_uring/workqueue lifetime fixes are used as source-archaeology examples, not as a reason to skip the foundations.
+
+### Next checkpoint
+
+Compare against mainline merge 7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046 and linux-next next-20261127. Recheck the official release index, mainline commit history, subsystem pulls and mailing-list reports.
