@@ -242,3 +242,40 @@ Lesson 03 explains why Kbuild, type annotations, object layout and link order ar
 - Use mainline merge [f4585067150b85e33f60876149a6e742928da75e](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e) as the latest recorded merge baseline, along with the selected sound/IOMMU/GPIO/PM merges above. These commits were newly recorded here but predate the prior 04:14 IST checkpoint.
 - Recheck kernel.org for a new mainline release tag and linux-next snapshot.
 - Do not repeat these as new unless a later merge changes the implementation or status.
+
+
+## Checkpoint 2026-11-28 06:18 IST — no material upstream delta
+
+### Release and branch status
+
+- [kernel.org](https://www.kernel.org/) continues to list mainline **7.4-rc4** and stable **7.3.6**. The indexed longterm releases include **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**.
+- The latest linux-next snapshot visible in the index remains **next-20261127**. I could not independently retrieve the exact linux-next tag object/hash in this run; do not infer it from a mirror of a different integration branch.
+- The latest mainline merge baseline already recorded in the previous checkpoint remains **6cce17ffe54a9fdcadbadfd59c00de7ac2cba25d** (staging-7.4-rc5 VME driver removal). The current retrievable mainline mirror also shows that commit as its master head. A separate mirror exposes 9437ee8 (net-7.4-rc5) and its ext4 post-merge parent, but those commits were already reachable/known before this checkpoint; mirror timestamps/indexing differ. No later post-checkpoint mainline merge was independently verified.
+- Kernel.org's published release tag remains 7.4-rc4. The 7.4-rc5 subsystem pulls described below are merged development-branch work, not a published 7.4-rc5 release.
+
+### Upstream briefing
+
+No new material delta was verified since the 05:15 IST checkpoint. Preserve the already captured changes rather than duplicate them:
+
+1. **Merged mainline — ALSA/ASoC:** [sound-7.4-rc5 merge](https://github.com/torvalds/linux/commit/16a4afe366a22507ccb7b3302f956e6404aeb4b6) covers PCM buffer access lifetime/locking, USB-audio URB stop cleanup and ASoC repeated-hw_params ownership. Relevant to audio DMA buffers, stream teardown and XRUN-safe lifecycle.
+2. **Merged mainline — IOMMU:** [IOMMU pull](https://github.com/torvalds/linux/commit/8c8611425a367d250339cdb05aa898971d35abdb) includes AMD IOMMU page-table cache coherency, runtime-PM execution-context corrections and safe retention of page tables when a hypervisor refuses domain deletion. Relevant to device-visible translation lifetime and SoC coherency.
+3. **Merged mainline — GPIO:** [GPIO pull](https://github.com/torvalds/linux/commit/3852adbb01116275eadf41c67af5ef68abe9755a) fixes IRQ/request lifetime during chip removal and output restoration ordering during resume. Relevant to pin control and externally observable power sequencing.
+4. **Merged mainline — PM/cpufreq:** [PM pull](https://github.com/torvalds/linux/commit/2cf42c49089d09e6b2a1dc35186f15721fe18c9c) addresses resume lock ordering and CPU-hotplug frequency refresh. Relevant to driver/firmware power-state coordination.
+5. **Merged mainline — thermal:** [thermal pull](https://github.com/torvalds/linux/commit/f4585067150b85e33f60876149a6e742928da75e) adds serialization around thermal-zone parameter sysfs access to avoid a possible NULL dereference.
+6. **Merged mainline — staging:** [VME driver removal](https://github.com/torvalds/linux/commit/6cce17ffe54a9fdcadbadfd59c00de7ac2cba25d) removes an unused driver after maintainer-reported maintenance/review churn.
+
+The ext4 merge discussion is useful source archaeology, not a new merge in this checkpoint: [maintainer pull request and Linus review](https://lore.kernel.org/lkml/179557603037.190026.16193029745159421407.pr-tracker-bot@kernel.org/t/). The ext4 pull included a large KUnit regression-test addition for inode-migration fixes. Linus objected to adding a very large test/development batch during -rc stabilization and emphasized that new development/tests belong on a separate branch for the next merge window. The merge was nevertheless accepted after discussion. Teach this as release-management/review process, not as an endorsement of arbitrary AI-generated code.
+
+### Trend observations
+
+- **Object lifetime and teardown — recurring, high confidence:** sound PCM buffers, GPIO IRQ requests and IOMMU page tables all require ownership to persist until asynchronous users and hardware are quiesced.
+- **IOMMU page-table coherency — hardware-specific but important:** page-table cache maintenance is separate from payload DMA synchronization. An IOMMU can itself be a non-coherent DMA client.
+- **Runtime PM and execution context — recurring:** never call a sleeping resume path from hard IRQ context; reason about PM references, IRQ threading, lock order and CPU hotplug together.
+- **Test growth and merge-window discipline — maintainer-backed process lesson:** KUnit regression coverage is valuable, but a large test/development series still needs appropriate timing, review and conflict management.
+- **AI-assisted reports — emerging workflow, not a quality guarantee:** a generated finding must be reproduced, reduced, mapped to a real call path and reviewed. Duplicate/noisy reports can consume maintainer capacity.
+
+### Next checkpoint
+
+- Re-query kernel.org and mainline master; record exact tag/object hashes when accessible.
+- Do not label any 7.4-rc5 pull as a released 7.4-rc5 feature until the release tag exists.
+- Continue with Lesson 05; the current upstream delta does not justify replacing the sequential curriculum lesson with an unrelated trend lesson.
