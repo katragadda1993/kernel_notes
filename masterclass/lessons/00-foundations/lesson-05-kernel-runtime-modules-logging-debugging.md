@@ -118,7 +118,7 @@ The lab parameters are:
 
 
 
-## 6A. Upstream case study: built-in module-parameter timing
+### Built-in module-parameter timing trap
 
 [Commit ed75528c095bc7760a3cf34a3f3e2ec7a59eb285](https://github.com/torvalds/linux/commit/ed75528c095bc7760a3cf34a3f3e2ec7a59eb285) fixed an early-boot hang when the NVMe PCI driver was built in and the nvme.quirks kernel command-line parameter was supplied.
 
