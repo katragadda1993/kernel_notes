@@ -76,9 +76,9 @@ The MAINTAINERS file contains patterns and ownership metadata. Common fields inc
 From the kernel source root:
 
 ~~~bash
-scripts/get_maintainer.pl drivers/soundwire/
-scripts/get_maintainer.pl drivers/pci/controller/
-scripts/get_maintainer.pl sound/soc/
+scripts/get_maintainer.pl drivers/soundwire/bus.c
+scripts/get_maintainer.pl drivers/pci/controller/pcie-altera.c
+scripts/get_maintainer.pl sound/soc/soc-core.c
 ~~~
 
 For a patch, pass the patch file instead. Review the output; it is a routing aid, not a guarantee that every listed person must receive every message.
@@ -169,9 +169,10 @@ OUT=$HOME/build/linux-x86-debug
 FRAG=$PWD/debug.fragment
 
 make -C "$SRC" O="$OUT" ARCH=x86 x86_64_defconfig
+cp "$OUT/.config" "$OUT/base.config"
 "$SRC/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" "$FRAG"
 make -C "$SRC" O="$OUT" ARCH=x86 olddefconfig
-"$SRC/scripts/diffconfig" "$SRC/arch/x86/configs/x86_64_defconfig" "$OUT/.config"
+"$SRC/scripts/diffconfig" "$OUT/base.config" "$OUT/.config"
 ~~~
 
 The exact merge command and configuration targets are documented in the pinned Kconfig documentation. Fragments are applied in order; later fragments can override earlier settings. The merge script can report redefinitions. The final olddefconfig pass resolves dependencies and defaults.
@@ -363,6 +364,7 @@ SRC=$HOME/src/linux
 OUT=$HOME/build/linux-x86-debug
 
 make -C "$SRC" O="$OUT" ARCH=x86 x86_64_defconfig
+cp "$OUT/.config" "$OUT/base.config"
 "$SRC/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" "$PWD/debug.fragment"
 make -C "$SRC" O="$OUT" ARCH=x86 olddefconfig
 
