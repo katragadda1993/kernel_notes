@@ -67,3 +67,8 @@ Every lesson adds at least 10 non-duplicate questions: 4 fundamentals, 3 source/
 
 ## 14. Historical/source archaeology
 Use git log, git blame, merge commits, subsystem pull requests, lore.kernel.org discussions and maintainer documentation. Record direct evidence for historical claims and label interpretation separately.
+
+
+## Ownership and lifetime quality gate
+
+For every asynchronous or shared driver object, include an ownership graph or table identifying creator, registry, open-file/stream, callback and hardware owners. Explain pointer publication/lookup protection, the exact get/put pairing, final-release context, probe failure unwind, remove/unbind behavior and the point at which DMA/firmware access is quiesced. Explicitly distinguish devres lifetime, object references, RCU grace periods, module-code lifetime and hardware ownership. Do not accept a successful compile as evidence that a teardown race is solved.
