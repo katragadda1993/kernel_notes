@@ -67,3 +67,10 @@ Complete [Lesson 03 — C, ELF, Linker and Kbuild Foundations](lessons/00-founda
 For every hardware-visible structure, document size, member offsets, alignment, endianness and ownership. Distinguish CPU virtual, CPU physical and device DMA addresses. Use __iomem accessors for registers, endian conversions for device formats and the DMA API for mappings. Do not treat __packed or a successful x86 build as proof of portable hardware layout.
 
 For a driver built into vmlinux, verify its Kconfig dependency and initcall/provider ordering. For a module, verify vermagic, exported symbols, namespaces, symbol versions and firmware availability. Never load a module built against a different target kernel merely because it compiled.
+
+
+## Source-tree and build-environment prerequisite
+
+Complete [Lesson 04 — Linux Kernel Source Tree, Configuration and Reproducible Builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) before beginning an in-tree driver change. Identify the owning subsystem using MAINTAINERS and get_maintainer.pl; inspect the subsystem tree and recent accepted patches. Keep one output directory per architecture/configuration, pin the source revision and config fragments, and record the exact compiler/binutils versions.
+
+For SoC work, the same source revision can be built for a host-side mock/test configuration and an arm64 target, but these are distinct artifacts. Do not reuse x86 generated headers or objects in an arm64 output tree. A successful build only proves the selected compile/link paths; it does not prove probe ordering, firmware availability, register behavior, DMA coherency or hardware functionality.
