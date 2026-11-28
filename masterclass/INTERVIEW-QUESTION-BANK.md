@@ -287,3 +287,36 @@ Answer checkpoint: check dmesg, vermagic, kernel release/config, architecture an
 
 **156. [Advanced | Architecture/trade-off] When should a driver be built into vmlinux rather than shipped as a module?**  
 Answer checkpoint: consider the boot dependency chain (especially root storage/filesystem), initramfs contents, firmware availability, recovery/update flexibility, image size, attack surface and deployment policy. A module needed before the real root is mounted must be built in or available from initramfs.
+
+
+## 15. Lesson 04 — Source tree, Kconfig, Kbuild and reproducible builds (Questions 157–166)
+
+**157. [Beginner | Fundamentals] What is the role of MAINTAINERS?**  
+Answer checkpoint: It maps paths/subsystems to maintainers, reviewers, mailing lists, status and source trees. It is a routing guide that must be combined with subsystem documentation and current review practice.
+
+**158. [Beginner | Fundamentals] What is the difference between Kconfig and Kbuild?**  
+Answer checkpoint: Kconfig models selectable features, types and dependencies. Kbuild uses the effective configuration and directory Makefiles to compile and link selected objects.
+
+**159. [Intermediate | Fundamentals] Why is ARCH=x86 used for an x86-64 kernel build?**  
+Answer checkpoint: Kbuild's architecture identifier and source directory are x86. uname -m reports the machine ABI name and should not be copied blindly into ARCH.
+
+**160. [Intermediate | Fundamentals] What does O= change in a kernel build?**  
+Answer checkpoint: It selects a separate output tree for .config, generated headers, objects, vmlinux, modules and other artifacts, allowing clean per-architecture/per-configuration builds.
+
+**161. [Intermediate | Source/API] What does olddefconfig do after a config fragment is merged?**  
+Answer checkpoint: It resolves new/changed symbols using defaults and Kconfig dependency/choice rules without prompting. Inspect the final .config because requested fragment values may be constrained or overridden.
+
+**162. [Intermediate | Source/API] How does merge_config.sh handle multiple fragments?**  
+Answer checkpoint: It merges a base configuration and fragments in order; later assignments can override earlier values. It reports redefinitions and should be followed by olddefconfig plus a diff/inspection.
+
+**163. [Advanced | Source/API] How would you use get_maintainer.pl when preparing a driver patch?**  
+Answer checkpoint: Run it on the patch (or affected files) from the kernel source tree, inspect M/R/L/T and path matches in MAINTAINERS, then confirm the subsystem tree, documentation and recent review threads.
+
+**164. [Intermediate | Debugging] CONFIG_MY_DRIVER=y is in a fragment, but it is absent from the final .config. What do you investigate?**  
+Answer checkpoint: Confirm the symbol exists in this revision, type and depends on chain, choice constraints, architecture support, fragment order and merge warnings. Run olddefconfig and inspect the defining Kconfig entry.
+
+**165. [Advanced | Debugging] An x86 build works, but the arm64 cross-build uses host tools or stale objects. What is the recovery plan?**  
+Answer checkpoint: Use a fresh arm64 O= directory, set ARCH=arm64 and a verified CROSS_COMPILE or LLVM toolchain, inspect verbose commands and versions, and ensure no environment variable redirects Kbuild to another output tree.
+
+**166. [Advanced | Architecture/trade-off] How would you design a reproducible kernel CI matrix for a SoC driver?**  
+Answer checkpoint: Pin source revision/config fragments/toolchains; use separate output trees; combine fast compile/config checks with Sparse, KUnit, kselftest and hardware/QEMU tests. Gate on correctness-critical jobs, mark expensive coverage as scheduled/advisory, and archive configs, logs and artifact hashes.
