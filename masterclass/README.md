@@ -3,7 +3,7 @@
 A practical, source-driven path from foundations to advanced Linux kernel and hardware-driver engineering.
 
 ## Current progress
-Lessons 01–03 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs and chroot self-test passed; an external module compiled against 6.12.107 headers but was not loaded into the 6.18.57 host. Sparse, arm64 execution and a full QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
+Lessons 01–04 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs and chroot self-test passed; an external module compiled against 6.12.107 headers but was not loaded into the 6.18.57 host. Sparse, arm64 execution and a full QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
 
 ## Learning philosophy
 - Understand the concept, then inspect the implementation in kernel source.
@@ -15,14 +15,15 @@ Lessons 01–03 are content-complete. The syscall and ELF labs ran on x86-64; th
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
-3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 156 source-backed questions, continuously expanding.
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 166 source-backed questions, continuously expanding.
 4. [Progress ledger](PROGRESS.md) — lesson completion and validation status.
 5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.
 6. [Lesson 02: Linux boot and early initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) — x86/arm64 entry, initcalls, initramfs and PID 1.
 7. [Lesson 03: C, ELF, linker and Kbuild](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) — kernel C types, ELF relocations, linker scripts and module build.
-8. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
-9. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
-10. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
+8. [Lesson 04: Source tree, configuration and reproducible builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) — MAINTAINERS, Kconfig, fragments, O= trees and toolchains.
+9. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
+10. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
+11. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
 
 ## Curriculum map
 | Stage | Focus |
