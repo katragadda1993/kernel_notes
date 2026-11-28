@@ -30,9 +30,15 @@ static int repeat_set(const char *val, const struct kernel_param *kp)
 	return 0;
 }
 
+static int repeat_get(char *buffer, const struct kernel_param *kp)
+{
+	return scnprintf(buffer, PAGE_SIZE, "%u\n",
+			 READ_ONCE(*(unsigned int *)kp->arg));
+}
+
 static const struct kernel_param_ops repeat_ops = {
 	.set = repeat_set,
-	.get = param_get_uint,
+	.get = repeat_get,
 };
 module_param_cb(repeat, &repeat_ops, &repeat, 0644);
 MODULE_PARM_DESC(repeat, "Number of work-item messages (1..20; writable)");
