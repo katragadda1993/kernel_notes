@@ -387,3 +387,36 @@ Answer checkpoint: Requested order, zone/node, /proc/buddyinfo free blocks by or
 **186. [Advanced | Architecture/trade-off] Design memory allocation for a PCIe audio engine with a descriptor ring and large streaming PCM buffers.**  
 Answer checkpoint: Use the DMA API and device DMA mask. A coherent DMA allocation is a common choice for the descriptor ring; payloads use the ALSA/platform buffer path and streaming DMA mapping/SG as appropriate. Keep CPU pointers separate from DMA addresses, handle cache synchronization/ownership and quiesce DMA before freeing either allocation. Avoid vmalloc as a direct single-buffer DMA source.
 
+
+
+## 17. Lesson 07 — Kernel object lifetime, references and error unwinding (Questions 187–196)
+
+**187. [Beginner | Fundamentals] What does `kref_init()` establish?**  
+Answer checkpoint: It initializes the embedded refcount to one. That initial reference belongs to the creator/owner and must be dropped exactly once with the matching release callback.
+
+**188. [Beginner | Fundamentals] Why must a caller already hold a valid reference before calling `kref_get()`?**  
+Answer checkpoint: Incrementing a refcount through a stale pointer is already a use-after-free. A raw lookup must be protected by a lock or a correct RCU protocol; `kref_get_unless_zero()` only helps after pointer memory is safely accessible.
+
+**189. [Intermediate | Fundamentals] How does `refcount_t` differ from using `atomic_t` as a reference counter?**  
+Answer checkpoint: refcount_t provides reference-specific overflow/underflow hardening and intentionally narrower memory-ordering semantics. It is not a general counter or a publication lock.
+
+**190. [Intermediate | Fundamentals] Why does devres not replace kref for an object that can outlive device detach?**  
+Answer checkpoint: Devres releases resources with the device's detach/failure lifecycle and does not reference-count the resource. An independently retained object needs an explicit lifetime model and must not be freed while open files/callbacks still use it.
+
+**191. [Intermediate | Source/API] When should a driver use `ERR_PTR()`, `IS_ERR()` and `PTR_ERR()`?**  
+Answer checkpoint: Pointer-returning APIs may encode a negative errno in a pointer. Test with IS_ERR before dereferencing, extract the error with PTR_ERR and preserve errors such as -EPROBE_DEFER. Treat NULL separately when the API defines it as “optional resource absent”.
+
+**192. [Intermediate | Source/API] Does `get_device()` automatically keep private memory allocated by `devm_kzalloc()` alive after remove()?**  
+Answer checkpoint: No. It protects the struct device's kobject/device release lifetime. Devres private data is still released on detach unless its lifetime is explicitly tied to a separately retained object or the device's final release design.
+
+**193. [Advanced | Source/API] What is the difference between RCU and kref in a lockless object registry?**  
+Answer checkpoint: RCU protects temporary traversal of a published pointer by pre-existing readers; kref allows a successfully acquired object to outlive the read-side critical section. Lookup plus get_unless_zero and writer removal/final reclamation must be paired correctly.
+
+**194. [Intermediate | Debugging] A driver gets a KASAN use-after-free during remove() while a firmware callback and delayed work may still run. What is your investigation order?**  
+Answer checkpoint: Stop new submissions/events, mark the object stopping, disable hardware sources, quiesce DMA/firmware, unregister callbacks, synchronize IRQs, cancel/flush work and timers, then drop each owner reference and free. Build an ownership ledger and prove every asynchronous producer is drained.
+
+**195. [Advanced | Debugging] `cancel_delayed_work_sync()` returns false during teardown. Should remove() drop the callback's reference itself?**  
+Answer checkpoint: Not if the callback was running or had already completed: the synchronous API waits for a running callback, and that callback owns its put. Only when cancellation returns true for a pending item that will not execute should the cancellation path drop the queued-work reference. Never double-put.
+
+**196. [Advanced | Architecture/trade-off] Design lifetime for an audio DSP device whose PCM stream can remain open while the physical device is unbound.**  
+Answer checkpoint: Separate the driver binding's devres resources from the stream/private state retained by open users. Stop new operations, mark the device dead, stop DMA and firmware access, unregister/disable callbacks, drain IRQ/work and detach the hardware. Keep the stream state alive with explicit references until each open user releases it; do not retain devm pointers or DMA buffers past detach.
