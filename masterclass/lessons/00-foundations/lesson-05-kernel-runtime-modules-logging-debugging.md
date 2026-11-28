@@ -116,6 +116,16 @@ The lab parameters are:
 | repeat | 0644 | Validated scalar, updated with WRITE_ONCE() and read with READ_ONCE() |
 | fail_after_alloc | 0400 | Load-time error injection after allocations |
 
+
+
+## 6A. Upstream case study: built-in module-parameter timing
+
+[Commit ed75528c095bc7760a3cf34a3f3e2ec7a59eb285](https://github.com/torvalds/linux/commit/ed75528c095bc7760a3cf34a3f3e2ec7a59eb285) fixed an early-boot hang when the NVMe PCI driver was built in and the nvme.quirks kernel command-line parameter was supplied.
+
+The commit message explains that module_param_cb() caused the built-in parameter callback to run at initcall level -1. The callback parsed/allocated a string before the memory allocators were initialized. The fix changed the declaration to device_param_cb(), which schedules parsing later at device initcall level 6.
+
+**Engineering lesson:** do not assume a module-parameter setter always runs after normal device and memory infrastructure is ready. Built-in and loadable forms can have different initialization timing. Keep early parameter callbacks allocation-free unless the selected parameter mechanism guarantees a later phase; inspect the macro expansion and initcall level in the exact source revision.
+
 A scalar READ_ONCE()/WRITE_ONCE() pair is not a general lock. If a parameter changes a multi-field invariant, use a suitable lock or another explicit synchronization scheme. Keep parameter callbacks short, validate input and return useful errno values.
 
 ## 5. Logging: printk, pr_* and dev_*
@@ -139,6 +149,14 @@ Once a driver has a struct device, prefer dev_*() because the log includes devic
 Avoid printing from high-frequency IRQ, DMA completion or audio period paths unless rate-limited and necessary. Excessive logging changes timing, floods the ring buffer and can hide the original failure. Prefer counters, tracepoints or dynamic debug for detailed diagnosis.
 
 Reference: [printk basics, v7.4-rc4](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/core-api/printk-basics.rst).
+
+### Logging context must outlive the message
+
+[Commit 018e3bf95e6360b7d528d3094b5302fb4e2fbed0](https://github.com/torvalds/linux/commit/018e3bf95e6360b7d528d3094b5302fb4e2fbed0) fixed a NULL dereference in USB gadget Ethernet debug logging. During unbind, the gadget pointer was cleared while the net_device survived. The old logging macros dereferenced the gadget's device; the fix used netdev_*() helpers whose net_device context remained valid for that object's lifetime.
+
+**Engineering lesson:** logging is executable code. A debug macro can dereference pointers and trigger a crash even when the log level is disabled in ordinary use but enabled by dynamic debug. Choose a logging context whose lifetime covers the callsite; never assume a diagnostic macro is harmless after unbind.
+
+
 
 ## 6. Dynamic debug
 
@@ -185,6 +203,14 @@ The exit path therefore performs this order:
 Never replace cancel_delayed_work_sync() with an asynchronous cancellation when the callback can still access memory being freed. Never free the work context before synchronizing with the callback.
 
 The workqueue API is documented in [workqueue.rst, v7.4-rc4](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/core-api/workqueue.rst).
+
+### Synchronous cancellation is context-sensitive
+
+[Commit b3a3f241dace3d4a775e1401b53a3f6d304534f0](https://github.com/torvalds/linux/commit/b3a3f241dace3d4a775e1401b53a3f6d304534f0) documents a framebuffer-console path where cancel_delayed_work_sync() could be reached from atomic console-printing context and sleep illegally. The fix separated a non-synchronous cancellation used in atomic-safe paths from a synchronous cancellation used when release was about to free the callback's context. It also added state/locking so a running callback could not re-arm itself after stop.
+
+**Engineering lesson:** cancel_delayed_work_sync() is a teardown/lifetime primitive that may sleep; it must not be called from hard IRQ, other atomic context or a path that cannot block. If the current context cannot wait, stop/requeue-gate the producer there and arrange a later process-context synchronization before freeing memory.
+
+
 
 ### Module references
 
