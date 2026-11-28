@@ -74,3 +74,8 @@ For a driver built into vmlinux, verify its Kconfig dependency and initcall/prov
 Complete [Lesson 04 — Linux Kernel Source Tree, Configuration and Reproducible Builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) before beginning an in-tree driver change. Identify the owning subsystem using MAINTAINERS and get_maintainer.pl; inspect the subsystem tree and recent accepted patches. Keep one output directory per architecture/configuration, pin the source revision and config fragments, and record the exact compiler/binutils versions.
 
 For SoC work, the same source revision can be built for a host-side mock/test configuration and an arm64 target, but these are distinct artifacts. Do not reuse x86 generated headers or objects in an arm64 output tree. A successful build only proves the selected compile/link paths; it does not prove probe ordering, firmware availability, register behavior, DMA coherency or hardware functionality.
+
+
+## Module runtime and safe-debugging prerequisite
+
+Complete [Lesson 05 — Kernel Runtime Essentials](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) before writing an asynchronous driver. Understand init failure unwinding, parameter validation, device-aware logging, dynamic debug and module references. Every work item, timer, IRQ thread and firmware callback needs an explicit stop/synchronize/free sequence. A module reference protects code lifetime; it does not prove that DMA or firmware access to a buffer has stopped.
