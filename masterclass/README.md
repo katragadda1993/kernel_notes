@@ -3,7 +3,7 @@
 A practical, source-driven path from foundations to advanced Linux kernel and hardware-driver engineering.
 
 ## Current progress
-Lessons 01–04 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs and chroot self-test passed; an external module compiled against 6.12.107 headers but was not loaded into the 6.18.57 host. Sparse, arm64 execution and a full QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
+Lessons 01–04 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs and chroot self-test passed; an external module compiled against 6.12.107 headers but was not loaded into the 6.18.57 host. Lesson 04's audit helper passed syntax and mock-fixture checks only; no full v7.4-rc4 build or arm64 cross-build was run. Sparse and a full QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
 
 ## Learning philosophy
 - Understand the concept, then inspect the implementation in kernel source.
