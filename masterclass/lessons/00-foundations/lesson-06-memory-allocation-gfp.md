@@ -37,7 +37,7 @@ One API cannot satisfy every combination efficiently. Linux therefore layers typ
 
 ### Allocator stack
 
-\`\`\`text
+```text
 Driver / subsystem
    |
    +-- kmalloc family --------> SLUB size-class cache ----+
@@ -49,7 +49,7 @@ Driver / subsystem
    +-- vmalloc ---------------> page allocator + kernel VA mapping
    |
    +-- DMA API ---------------> device-visible DMA address / IOVA
-\`\`\`
+```
 
 This is a conceptual map. Exact wrappers and fast paths depend on configuration, architecture, instrumentation and allocator implementation. Follow the pinned source rather than memorizing one internal function name.
 
@@ -87,7 +87,7 @@ Prefer kzalloc when zero initialization is part of the object invariant. Do not 
 
 For a structure with a flexible array member, use struct_size() rather than open-coded arithmetic:
 
-\`\`\`c
+```c
 struct command_batch {
         u32 count;
         struct command commands[];
@@ -98,7 +98,7 @@ struct command_batch *batch;
 batch = kzalloc(struct_size(batch, commands, nr_commands), GFP_KERNEL);
 if (!batch)
         return -ENOMEM;
-\`\`\`
+```
 
 For a plain array, use kcalloc(n, sizeof(*array), GFP_KERNEL). An unchecked n * sizeof(*array) can wrap and allocate less memory than the caller later indexes.
 
@@ -106,7 +106,7 @@ For a plain array, use kcalloc(n, sizeof(*array), GFP_KERNEL). An unchecked n * 
 
 Use kmem_cache_create() when a subsystem repeatedly allocates objects of one type:
 
-\`\`\`c
+```c
 cache = kmem_cache_create("my_driver_desc",
                           sizeof(struct my_desc),
                           0, SLAB_HWCACHE_ALIGN, NULL);
@@ -121,7 +121,7 @@ if (!desc)
 
 kmem_cache_free(cache, desc);
 kmem_cache_destroy(cache); /* only after every object is returned */
-\`\`\`
+```
 
 A dedicated cache can provide type-specific alignment, reuse and diagnostic visibility. The optional constructor is not a substitute for resetting per-allocation state: use kmem_cache_zalloc() or initialize every field required by the object invariant.
 
@@ -239,12 +239,12 @@ For a PCIe device, audio DMA engine or DSP:
 
 Example design for an audio or PCIe engine:
 
-\`\`\`text
+```text
 CPU control structures       -> kzalloc()/kmem_cache_zalloc()
 Descriptor ring              -> dma_alloc_coherent()
 Streaming audio/payload data -> DMA API mapping / ALSA buffer API
 Large CPU-only lookup table   -> kvzalloc() if physical contiguity is unnecessary
-\`\`\`
+```
 
 Do not use GFP_DMA32 as a replacement for setting a DMA mask. The DMA API understands the device's addressing constraints and any IOMMU translation.
 
@@ -267,29 +267,29 @@ The timer allocation is pedagogical. Production interrupt/timer paths should gen
 
 ### Build against the exact target kernel
 
-\`\`\`sh
+```sh
 make KDIR=/path/to/exact/target/kernel/build clean all
 modinfo ./lesson06_alloc.ko
 readelf -h ./lesson06_alloc.ko
-\`\`\`
+```
 
 Only in a disposable VM/board running the same kernel build and with module loading permitted:
 
-\`\`\`sh
+```sh
 sudo insmod ./lesson06_alloc.ko array_count=32 delay_ms=100
 dmesg | tail -30
 sudo rmmod lesson06_alloc
 dmesg | tail -30
-\`\`\`
+```
 
 Expected messages include an init line, a worker allocation line, a timer allocation line (if the atomic allocation succeeds), and an exit line. The timer allocation may legitimately fail under pressure; the callback logs and returns safely.
 
 Observe the host's current allocator state:
 
-\`\`\`sh
+```sh
 chmod +x ./memory-observe.sh
 ./memory-observe.sh
-\`\`\`
+```
 
 It reads /proc/meminfo, /proc/buddyinfo, /proc/pagetypeinfo, /proc/slabinfo and a sample of /sys/kernel/slab when available. It does not modify system state.
 
