@@ -15,7 +15,7 @@ Lessons 01–06 are content-complete. The syscall and ELF labs ran on x86-64; th
 ## Start here
 1. [Complete curriculum](CURRICULUM.md)
 2. [Lesson format and engineering standards](LESSON-STANDARD.md)
-3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 186 source-backed questions, continuously expanding.
+3. [Linux kernel and driver interview question bank](INTERVIEW-QUESTION-BANK.md) — 196 source-backed questions, continuously expanding.
 4. [Progress ledger](PROGRESS.md) — lesson completion and validation status.
 5. [Lesson 01: User/kernel boundary](lessons/00-foundations/lesson-01-user-kernel-boundary.md) — privilege, syscalls, exceptions and IRQs.
 6. [Lesson 02: Linux boot and early initialization](lessons/00-foundations/lesson-02-linux-boot-and-early-init.md) — x86/arm64 entry, initcalls, initramfs and PID 1.
@@ -23,6 +23,7 @@ Lessons 01–06 are content-complete. The syscall and ELF labs ran on x86-64; th
 8. [Lesson 04: Source tree, configuration and reproducible builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) — MAINTAINERS, Kconfig, fragments, O= trees and toolchains.
 9. [Lesson 05: Kernel runtime, modules, logging and safe teardown](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) — module lifecycle, parameters, dynamic debug, workqueue lifetime and error unwinding.
 10. [Lesson 06: Memory allocation and GFP context](lessons/00-foundations/lesson-06-memory-allocation-gfp.md) — kmalloc, SLUB, buddy allocator, vmalloc, GFP masks and DMA allocation boundaries.
+11. [Lesson 07: Object lifetime, references and error unwinding](lessons/00-foundations/lesson-07-object-lifetime-references-error-unwinding.md) — ERR_PTR, kref/refcount_t, devres, RCU, asynchronous callbacks and probe/remove ownership.
 11. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
 12. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
 13. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
