@@ -171,3 +171,34 @@ This is a lifecycle case study, not a claim about a particular vendor's propriet
 - **Documented fact:** the commit message gives the atomic call path and the DEBUG_ATOMIC_SLEEP report.
 - **Engineering lesson:** choose cancellation by both lifetime requirement and execution context. Nonblocking cancel alone does not prove callback completion; use a later sleepable teardown point to synchronize before freeing memory.
 
+
+
+## Memory allocator archaeology: object caches, page allocation and reclaim
+
+### The original object-cache motivation
+
+Jeff Bonwick's 1994 USENIX paper describes the SunOS 5.4 slab allocator. The design retained reusable, typed objects instead of repeatedly constructing and destroying common kernel structures. The paper discusses object caches, cache coloring, reclaim under memory pressure and allocator statistics/debugging.
+
+The 2001 Magazines and Vmem paper explains why per-CPU caching was added to scale allocation across many processors and reduce global-lock contention. This is design history for the broader slab family; do not imply Linux copied every Solaris implementation detail unchanged.
+
+### Linux 7.4 slab update
+
+The [slab-for-7.4 merge](https://github.com/torvalds/linux/commit/7a78f7ba9f24962c8033e0152bf34a7903ff61ba) includes:
+- a SLUB sheaf-prefill improvement that allows a barn to retain a partial sheaf and refill it, with the pull report citing a 24% will-it-scale mmap1 throughput improvement on the maple_node cache;
+- restored memory-cgroup accounting for IPC msg_msg allocations on the fallback path when CONFIG_SLAB_BUCKETS=n;
+- a kmem_cache_destroy() versus slab_late_init() race fix;
+- explicit rejection of unsupported oversized kmalloc() requests.
+
+**Engineering interpretation:** allocator performance, memory accounting and allocator-object lifetime are coupled. A faster fast path is not acceptable if fallback paths lose cgroup accounting or teardown races access uninitialized allocator metadata. The reported 24% is a specific benchmark/cache result, not a general system-wide speedup.
+
+### Linux 7.4-rc5 core-MM fixes
+
+The [core MM merge 1f1b6ca3145a1179d88b0033a871e4e187da0d4e](https://github.com/torvalds/linux/commit/1f1b6ca3145a1179d88b0033a871e4e187da0d4e) fixes folio-lock deadlocks in splitting/migration, stale TLB/data visibility cases, MADV_FREE behavior and device-memory migration lifetime bugs. The pull request explicitly says the changes had spent several days in linux-next and had received review before being sent for the release-candidate cycle.
+
+**Engineering interpretation:** allocation/free correctness does not end at kfree(). Page migration, reverse mapping, TLB invalidation and device memory can extend the lifetime/visibility contract beyond the original CPU pointer.
+
+### Facts versus interpretation
+
+- **Documented facts:** use the exact USENIX papers and merge messages linked above.
+- **Observed implementation:** inspect the v7.4-rc4 allocator source and the exact commit diffs.
+- **Interpretation:** allocator scalability, memcg accounting, reclaim recursion and object lifetime are recurring system-level constraints. Validate this interpretation against more than one subsystem and release.
