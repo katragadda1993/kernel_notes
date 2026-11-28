@@ -103,3 +103,16 @@ The fix restores the '+' prefix. The commit includes a concrete reproduction con
 **Engineering interpretation:** build-system correctness includes process/FD inheritance and jobserver semantics, not only compiler flags. An AI-assisted patch is still subject to a reproducible failure, review and testing evidence.
 
 Related review discussion: [Kees Cook's initcall-ordering discussion](https://lore.kernel.org/all/CAK7LNARCM=rUm8mA8GRQ7ufeyfneGf4OEvHmESKt=zuxs2KrHw@mail.gmail.com/).
+
+
+## Lesson 04 — Source ownership and build configuration archaeology
+
+The source-tree/build-system investigation should be evidence-based:
+
+- Start with the pinned [Kbuild overview](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/kbuild/kbuild.rst), [Kconfig language](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/kbuild/kconfig-language.rst), [MAINTAINERS](https://github.com/torvalds/linux/blob/v7.4-rc4/MAINTAINERS) and [reproducible-build documentation](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/kbuild/reproducible-builds.rst).
+- Use git log --follow and git blame on the actual Kconfig/Makefile/source file to understand why a symbol or object is selected.
+- Inspect the source revision's get_maintainer.pl output and current subsystem review instructions; ownership can change over time.
+- Record the exact source commit and final .config. A defconfig name alone is insufficient because defaults and dependencies evolve between kernel releases.
+- Treat the audit script in Lesson 04 as a metadata aid, not proof that the source tree builds or that a driver works.
+
+No claim is made that the Kconfig/Kbuild behavior was executed against a real v7.4-rc4 checkout in this publication; the helper was syntax-checked and tested against a minimal mock fixture only.
