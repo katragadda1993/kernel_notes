@@ -308,3 +308,40 @@ The latest mainline merge search was re-run against torvalds/linux and the curre
 - Compare the next run against mainline merge f4585067150b85e33f60876149a6e742928da75e and linux-next next-20261127.
 - Recheck kernel.org for a new release tag and the linux-next refs/log for a new daily snapshot.
 - Continue the sequential curriculum with Lesson 06 — Kernel Memory Allocation and GFP Context. No upstream change in this run justifies skipping the planned lesson.
+
+
+## Checkpoint 2026-11-28 08:12 IST — memory merges reconciled; no confirmed post-07:15 delta
+
+### Release and integration status
+
+- The [kernel.org release index](https://www.kernel.org/) lists mainline **7.4-rc4** (2026-11-22), stable **7.3.6** (2026-11-23), and longterm **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**. The published mainline release tag remains 7.4-rc4.
+- The same index lists linux-next **next-20261127** (2026-11-27). No newer official daily snapshot was visible.
+- Mainline commit views are not perfectly synchronized across mirrors. The prior checkpoint's f4585067 thermal merge remains the last recorded baseline in the lesson ledger. Current mirror views also expose the 7.4-rc5 development merges below. Direct git.kernel.org access was not available, so do not claim a verified new object hash for the live mainline tip.
+- The merges below are development-branch mainline commits; they do not mean a published 7.4-rc5 release exists.
+
+### Upstream briefing — memory-relevant merges reconciled
+
+These merges were already present before the prior 07:15 IST checkpoint but were not fully described there. They are added here as a reconciliation, not falsely presented as newly merged after that checkpoint.
+
+1. **Merged mainline — core MM, 7.4-rc5 development:** [1f1b6ca3145a1179d88b0033a871e4e187da0d4e](https://github.com/torvalds/linux/commit/1f1b6ca3145a1179d88b0033a871e4e187da0d4e). Fixes folio-lock deadlocks in split/migration paths, stale TLB/data visibility cases, MADV_FREE data/stale-swap issues, device-memory migration use-after-free/oops cases and an mm lifetime bug when copy_process() fails. The [maintainer pull request](https://lkml.iu.edu/hypermail/linux/kernel/2611.3/10608.html) states the changes had several days in linux-next after review. Hardware relevance: device-memory migration and page/folio lifetime are directly relevant to accelerators, HMM and shared-memory drivers. Do not backport isolated hunks without their locking/TLB/rmap dependencies.
+2. **Merged mainline — MM hotfixes, 7.4-rc5 development:** [b312ada03437d5874a8dbac6b4a1d479c2af3da9](https://github.com/torvalds/linux/commit/b312ada03437d5874a8dbac6b4a1d479c2af3da9). The [maintainer summary](https://lore-kernel.gnuweeb.org/linux-mm/20261124224409.56e65d8ff1f72a1d485450ad%40linux-foundation.org/) describes swapcache/cluster races, hugetlb/TLB/migration fixes, list_lru/cgroup ID lifetime, MGLRU reparenting and memcg accounting corrections. It also reports a workload-specific swap allocation throughput improvement for an NVMe mysql/sysbench case. Hardware relevance: reclaim and cgroup accounting can affect I/O latency and memory pressure observed by device drivers. Benchmark figures are workload-specific.
+3. **Merged mainline — SLUB/slab updates for 7.4:** [7a78f7ba9f24962c8033e0152bf34a7903ff61ba](https://github.com/torvalds/linux/commit/7a78f7ba9f24962c8033e0152bf34a7903ff61ba). The [maintainer discussion](https://lkml.iu.edu/hypermail/linux/kernel/2610.2/16280.html) documents the sheaf/barn prefill performance work, restored memcg accounting for IPC message allocations, a cache-destroy/bootstrap race fix and oversized-kmalloc rejection. The cited 24% result applies to will-it-scale mmap1 on the maple_node cache, not all allocations.
+4. **Merged mainline — networking fixes, 7.4-rc5 development:** [9437ee8b6cf607e883b36e44bd755968daaebd48](https://github.com/torvalds/linux/commit/9437ee8b6cf607e883b36e44bd755968daaebd48). The pull covers Wi-Fi, Bluetooth, CAN and Ethernet fixes, including an mlx5e NULL-pointer write in a peer-flow error path and XFRM validation of non-IP packets. Hardware relevance: error-path correctness in high-throughput drivers still depends on pointer validation and packet-type invariants.
+
+### Trend observations
+
+- **Object/page lifetime is a recurring correctness boundary — high confidence.** SLUB cache destruction, folio migration, rmap/TLB invalidation and device-memory migration all require that an object/page not be reused while another CPU, device or subsystem can still reference it.
+- **Memory accounting must survive allocator fallback — high confidence.** The SLUB/IPC fix demonstrates that a fallback from a specialized cache to general kmalloc must preserve memcg charging semantics.
+- **Allocator throughput is increasingly optimized through local caching and batching — evidence-backed but workload-specific.** The sheaf/barn prefill report gives a concrete benchmark result. Measure the real object/cache/workload before claiming a driver benefit.
+- **Reclaim is an I/O/filesystem interaction, not a free background service — high confidence.** GFP masks and NOFS/NOIO scope exist because reclaim can recurse into subsystems and deadlock if a driver or filesystem holds the wrong resource.
+
+### Lesson connection
+
+Lesson 06 teaches the API-level decision. Follow it with the pinned v7.4-rc4 source in mm/slub.c, mm/page_alloc.c and mm/vmalloc.c; then compare the later 7.4-rc5 merge diffs above. Keep the source baseline and development merge status separate.
+
+### Next checkpoint
+
+- Recheck kernel.org for a new mainline release and linux-next daily tag.
+- Re-query Linus's mainline merge history; note mirror divergence and use exact merge hashes when available.
+- Do not repeat the memory merges above as new unless a subsequent commit changes the behavior.
+- Continue with Lesson 07 — Kernel Object Lifetime, References and Error Unwinding.
