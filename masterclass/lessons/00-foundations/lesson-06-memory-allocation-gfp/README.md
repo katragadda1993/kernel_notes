@@ -10,31 +10,31 @@
 
 Use the exact configured build tree for the kernel that will load the module:
 
-\`\`\`sh
+```sh
 make KDIR=/path/to/exact/kernel/build clean all
 modinfo ./lesson06_alloc.ko
 readelf -h ./lesson06_alloc.ko
-\`\`\`
+```
 
 The module must not be loaded into a different kernel release/configuration merely because it compiled.
 
 ## Runtime in a disposable matching VM
 
-\`\`\`sh
+```sh
 sudo insmod ./lesson06_alloc.ko array_count=32 delay_ms=100
 dmesg | tail -30
 sudo rmmod lesson06_alloc
 dmesg | tail -30
-\`\`\`
+```
 
 Expected log sequence includes init, worker, timer (if allocation succeeds), and exit. The timer callback is a non-sleeping context and uses GFP_ATOMIC; failure is handled. This is a teaching example, not a recommendation to allocate on every real interrupt.
 
 ## Observe allocator state
 
-\`\`\`sh
+```sh
 chmod +x ./memory-observe.sh
 ./memory-observe.sh
-\`\`\`
+```
 
 The script is read-only. It prints /proc/meminfo, /proc/buddyinfo, /proc/pagetypeinfo, /proc/slabinfo and a sample of /sys/kernel/slab where available.
 
