@@ -369,7 +369,7 @@ Lesson 06 teaches the API-level decision. Follow it with the pinned v7.4-rc4 sou
 5. **Merged mainline — BPF security/correctness fixes:** [d3a5ea8a82fabeb2314700c2e001130faf99df1f](https://github.com/torvalds/linux/commit/d3a5ea8a82fabeb2314700c2e001130faf99df1f). The pull summary describes verifier type/attach checks, CAP_PERFMON requirements where CAP_BPF alone exposed kernel addresses or task operations, speculation barriers, NULL checks and clearing uninitialized data in skb/XDP/socket helpers.
 6. **Merged mainline — DRM fixes:** [c639ac6b9cf100b860408a3cf8d7eab268866cd7](https://github.com/torvalds/linux/commit/c639ac6b9cf100b860408a3cf8d7eab268866cd7). Includes dma-fence error-check ordering, TTM LRU cleanup on shutdown, unregistering hwmon before device unplug, GPU error-path/fence accounting and a V3D double-free fix.
 
-The three reconciliation merges above have timestamps earlier than the previous 08:12 IST checkpoint. They are documented now because the earlier search missed them; they are not represented as new post-checkpoint activity.
+The four reconciliation merges above have timestamps earlier than the previous 08:12 IST checkpoint. They are documented now because the earlier search missed them; they are not represented as new post-checkpoint activity.
 
 ### Trend observations
 
