@@ -279,3 +279,32 @@ The ext4 merge discussion is useful source archaeology, not a new merge in this 
 - Re-query kernel.org and mainline master; record exact tag/object hashes when accessible.
 - Do not label any 7.4-rc5 pull as a released 7.4-rc5 feature until the release tag exists.
 - Continue with Lesson 05; the current upstream delta does not justify replacing the sequential curriculum lesson with an unrelated trend lesson.
+
+
+## Checkpoint 2026-11-28 07:15 IST — no post-checkpoint mainline delta
+
+### Release and tree status
+
+- The [kernel.org release index](https://www.kernel.org/) continues to list mainline **7.4-rc4** (2026-11-22) and stable **7.3.6** (2026-11-23). Indexed longterm releases include **6.18.65**, **6.12.119**, **6.6.163**, **6.1.193**, **5.15.226** and **5.10.275**.
+- The latest linux-next snapshot visible in the available index/search remains **next-20261127**. No next-20261128 result was found. Direct git.kernel.org access returned HTTP 403 in this run, so the exact current linux-next tag object/hash was not independently verified.
+- The [GitHub mainline commit history](https://github.com/torvalds/linux/commits/master) and GitHub commit search still show **f4585067150b85e33f60876149a6e742928da75e** (thermal-7.4-rc5 pull, 2026-11-27 20:41:24 UTC) as the latest visible Linus commit. That timestamp is 2026-11-28 02:11 IST, earlier than the previous 06:18 IST checkpoint. No newer mainline merge was found after that checkpoint.
+- The release tag remains 7.4-rc4. The already recorded 7.4-rc5-labelled subsystem pulls are merged development-branch commits, not a published 7.4-rc5 release.
+
+### Upstream briefing
+
+No new material delta was verified since the 06:18 IST checkpoint. Retain the previously captured ALSA/ASoC, IOMMU, GPIO, PM/cpufreq, thermal, staging, MM, arm64, USB and sched_ext changes as the current evidence set; do not re-label them as new in this run.
+
+The latest mainline merge search was re-run against torvalds/linux and the current GitHub commits page. The latest visible merge remains the thermal pull above. The kernel.org index still reports the same release versions. The linux-next tag search did not surface a newer daily tag.
+
+### Trend observations
+
+- **Resource lifetime and synchronization — high confidence, recurring:** the previously recorded ALSA buffer, GPIO IRQ, IOMMU domain and thermal sysfs fixes continue to show the same object-lifetime requirement.
+- **IOMMU/page-table coherency — hardware-specific:** retain the distinction between IOMMU translation-table cache maintenance and payload DMA synchronization.
+- **Runtime PM and execution context — recurring:** retain the hard-IRQ sleep restriction and lock-order analysis from the VeriSilicon IOMMU and cpufreq changes.
+- **AI-assisted bug triage — emerging workflow:** prior maintainer statements show both useful reproducer-backed reports and review churn. This remains an evidence/triage lesson, not a claim that generated patches are intrinsically reliable.
+
+### Next checkpoint
+
+- Compare the next run against mainline merge f4585067150b85e33f60876149a6e742928da75e and linux-next next-20261127.
+- Recheck kernel.org for a new release tag and the linux-next refs/log for a new daily snapshot.
+- Continue the sequential curriculum with Lesson 06 — Kernel Memory Allocation and GFP Context. No upstream change in this run justifies skipping the planned lesson.
