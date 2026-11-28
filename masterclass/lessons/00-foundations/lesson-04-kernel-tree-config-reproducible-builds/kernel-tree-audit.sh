@@ -5,7 +5,7 @@ usage() {
     cat <<'USAGE'
 Usage: kernel-tree-audit.sh KERNEL_SOURCE OUTPUT_DIRECTORY [ARCH]
 
-Read-only audit of a configured Linux source/output tree. It does not build,
+Non-building audit of a configured Linux source/output tree. It does not build,
 install, boot, or load anything. Example:
   ./kernel-tree-audit.sh ~/src/linux ~/build/linux-x86 x86
 USAGE
@@ -59,8 +59,12 @@ make -s -C "$SRC" O="$OUT" ARCH="$ARCH_ARG" kernelversion
 
 if [[ -f "$OUT/.config" ]]; then
     echo 'config=present'
-    printf 'kernel_release='
-    make -s -C "$SRC" O="$OUT" ARCH="$ARCH_ARG" kernelrelease
+    if [[ -f "$OUT/include/config/auto.conf" ]]; then
+        printf 'kernel_release='
+        make -s -C "$SRC" O="$OUT" ARCH="$ARCH_ARG" kernelrelease
+    else
+        echo 'kernel_release=unavailable (configuration not prepared; run olddefconfig)'
+    fi
     echo 'selected_config_symbols:'
     grep -E '^(CONFIG_(MODULES|MODULE_UNLOAD|DEBUG_INFO|KALLSYMS|KALLSYMS_ALL|GDB_SCRIPTS|IKCONFIG|IKCONFIG_PROC)=|# CONFIG_(MODULES|MODULE_UNLOAD|DEBUG_INFO|KALLSYMS|KALLSYMS_ALL|GDB_SCRIPTS|IKCONFIG|IKCONFIG_PROC) is not set)' "$OUT/.config" || true
 else
@@ -76,4 +80,4 @@ fi
 printf 'compiler_env: CC=%s CROSS_COMPILE=%s LLVM=%s\n' \
     "${CC:-default}" "${CROSS_COMPILE:-default}" "${LLVM:-default}"
 
-echo 'audit=read-only (no kernel build, install, boot or module load performed)'
+echo 'audit=non-building (no kernel build, install, boot or module load performed)'
