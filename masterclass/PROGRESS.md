@@ -4,7 +4,7 @@ Last updated: 2026-11-28
 
 ## Overall status
 
-The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/Kbuild fundamentals, source-tree/configuration/build workflow, module runtime/logging/teardown, and memory allocation/GFP context. A lesson is marked content-complete only when its source walkthrough, lab, debugging exercise, exercises, knowledge check and references are present. Lab validation is reported separately from content completeness.
+The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/Kbuild fundamentals, source-tree/configuration/build workflow, module runtime/logging/teardown, memory allocation/GFP context, and object lifetime/references/error unwinding. A lesson is marked content-complete only when its source walkthrough, lab, debugging exercise, exercises, knowledge check and references are present. Lab validation is reported separately from content completeness.
 
 ## Lesson ledger
 
@@ -17,6 +17,7 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 | [05 — Kernel runtime, modules, logging and safe teardown](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) | 2 | Module lifecycle, parameters, printk/pr_*/dev_*, dynamic debug, delayed work, error unwinding and safe unload | Complete | External module built against 6.12.107+deb13-amd64 headers; modinfo and readelf inspected. Not loaded because host runs 6.18.57. Runtime workqueue, dynamic debug, init-failure injection, Sparse, v7.4-rc4 build, arm64 and hardware remain unverified | v7.4-rc4 |
 
 | [06 — Memory allocation and GFP context](lessons/00-foundations/lesson-06-memory-allocation-gfp.md) | 2/3 | kmalloc family, vmalloc/kvmalloc, kmem_cache, buddy/SLUB overview, GFP context, DMA distinction and memory observability | Complete | Module compiled, modpost/link passed against 6.12.107+deb13-amd64; modinfo/readelf inspected. Read-only memory-observe.sh passed syntax and ran on 6.18.57. Module not loaded because headers do not match host; runtime GFP/timer/workqueue, memory pressure/fault injection, Sparse, v7.4-rc4, arm64 and hardware remain unverified | v7.4-rc4 |
+| [07 — Kernel object lifetime, references and error unwinding](lessons/00-foundations/lesson-07-object-lifetime-references-error-unwinding.md) | 2/4 | ERR_PTR, refcount_t/kref, device/kobject refs, devres, RCU, async callback lifetime and probe/remove unwind | Complete | External module compiled, modpost/link passed against 6.12.107+deb13-amd64; modinfo/readelf inspected. Not loaded because host runs 6.18.57. Runtime cancellation, failed-init injection, KASAN/KCSAN, lockdep, Sparse, arm64 and hardware remain unverified | v7.4-rc4 |
 
 ## Coverage notes
 
@@ -31,11 +32,12 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 - The authoring environment has kernel headers (6.12.107/6.12.63) but no full kernel source checkout. No real v7.4-rc4 defconfig/fragment merge, full kernel build, arm64 cross-build or QEMU boot was performed.
 - Lesson 05's external module built successfully with Kbuild against /usr/src/linux-headers-6.12.107+deb13-amd64. modinfo showed all three parameter definitions and the 6.12.107 vermagic. readelf showed .init.text, .exit.text, .modinfo and __param. The running host is 6.18.57, so insertion/removal was deliberately not attempted. Runtime workqueue behavior, dynamic-debug control and injected init failure remain unverified.
 - Lesson 06's allocation module compiled and linked successfully against 6.12.107+deb13-amd64 headers. modinfo confirmed the module description, GPL license, parameters and 6.12.107 vermagic; readelf identified an ELF64 x86-64 relocatable object. The module was not loaded because the running host is 6.18.57. The read-only memory-observe.sh passed syntax validation and ran on 6.18.57, reading available /proc and /sys allocator snapshots. No memory-pressure/fault-injection or runtime timer/workqueue allocation result is claimed.
+- Lesson 07's kref/delayed-work module compiled, completed modpost and linked against 6.12.107+deb13-amd64 headers. modinfo confirmed its parameters and vermagic; readelf confirmed an ELF64 x86-64 relocatable module. It was not loaded because the running host is 6.18.57. Runtime cancellation, failed-init path, refcount debugging, KASAN/KCSAN, lockdep, Sparse, arm64 and real hardware are unverified.
 - Sparse is not installed. No full v7.4-rc4 build, arm64 cross-build, QEMU boot or hardware validation is claimed.
 
 ## Next sequential lesson
 
-**Lesson 07 — Kernel Object Lifetime, References and Error Unwinding:** ERR_PTR conventions, refcount_t/kref, ownership transfer, devres lifetime, asynchronous users and systematic probe/remove cleanup.
+**Lesson 08 — Execution Contexts and Synchronization:** process/softirq/hard-IRQ context, preemption, mutexes, spinlocks, IRQ-safe locking, completions, wait queues and the memory-ordering rules needed by drivers.
 
 ## Definition of done
 
@@ -63,3 +65,13 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 - readelf -h identified an ELF64 little-endian x86-64 relocatable module.
 - memory-observe.sh passed shell syntax validation and ran on the 6.18.57 host, reading memory/buddy/slab snapshots.
 - Module insertion was not attempted because the host is 6.18.57 while the module was built against 6.12.107 headers. No runtime allocation, GFP context, timer/workqueue, pressure, failure-injection, Sparse, v7.4-rc4, arm64 or hardware test is claimed.
+
+
+## Lesson 07 lab validation detail
+
+- Build command: `make -C /tmp/lesson07 KDIR=/usr/src/linux-headers-6.12.107+deb13-amd64 clean all`.
+- Result: Kbuild compiled lesson07_lifetime.o, completed modpost and linked lesson07_lifetime.ko.
+- modinfo confirmed GPL license, module description, delay_ms/fail_after_queue parameters and 6.12.107+deb13-amd64 vermagic.
+- readelf -h identified an ELF64 little-endian x86-64 relocatable module.
+- Running host is 6.18.57. Module insertion was deliberately not attempted because the module was built against 6.12.107 headers.
+- No runtime callback/cancellation, failed-init injection, refcount underflow/use-after-free, KASAN/KCSAN, lockdep, Sparse, arm64 or hardware result is claimed.
