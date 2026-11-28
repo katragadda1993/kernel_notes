@@ -202,3 +202,42 @@ The [core MM merge 1f1b6ca3145a1179d88b0033a871e4e187da0d4e](https://github.com/
 - **Documented facts:** use the exact USENIX papers and merge messages linked above.
 - **Observed implementation:** inspect the v7.4-rc4 allocator source and the exact commit diffs.
 - **Interpretation:** allocator scalability, memcg accounting, reclaim recursion and object lifetime are recurring system-level constraints. Validate this interpretation against more than one subsystem and release.
+
+
+## Lesson 07 — Object lifetime, RCU, workqueues and error unwinding
+
+### io_uring: full object teardown after an RCU grace period
+
+The [io_uring RCU-work fix a905ff43362e80590e54f6ea9ddb2d1a998aa01c](https://github.com/torvalds/linux/commit/a905ff43362e80590e54f6ea9ddb2d1a998aa01c), included in the [mainline io_uring pull 7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046](https://github.com/torvalds/linux/commit/7cd8495c0f16275c4f9abe1cef09a7b5fcd6d046), explains why a final `kfree_rcu(ctx)` was not enough. Task-work add paths could still inspect ring fields while the exit work freed those members before the outer context. The change queues the whole `io_ring_ctx_free()` as RCU work so member teardown occurs after the grace period and in process context.
+
+- **Documented fact:** the commit message names the RCU readers, fields accessed and the process-context requirement.
+- **Engineering interpretation:** defer the complete teardown when readers can access members, not merely the final outer allocation. This is relevant to lockless registries, firmware contexts and device queues.
+
+### io_uring: cached task references must be drained on every exit path
+
+The [cached task-reference fix 6f3159575d53eed2d54557aef2dd8373da7c0208](https://github.com/torvalds/linux/commit/6f3159575d53eed2d54557aef2dd8373da7c0208) documents a task_struct leak when an exiting task released a ring with an in-flight request. A cancellation path could put a task reference into a cache after the ordinary task-exit path had already performed its final cache drain.
+
+- **Documented fact:** the commit traces do_exit(), io_uring cancellation, ring release and the cached-reference path.
+- **Engineering interpretation:** reference batching is safe only when every completion, error, close and exit path has a final drain boundary.
+
+### Workqueue drain: chained work can land on another pool-workqueue
+
+The [workqueue fix 94ff2d27fafad99c63c02ab4d7e148c37e4eff80](https://github.com/torvalds/linux/commit/94ff2d27fafad99c63c02ab4d7e148c37e4eff80) explains that a drain pass could observe pwq A as empty, then miss work queued there by a running item on pwq B. Destruction could then see a busy queue and leak it. The fix tracks started work and rechecks the pwqs.
+
+The [maintainer pull report](https://lkml.iu.edu/hypermail/linux/kernel/2611.3/04049.html) describes the reproducer and the workqueue destruction failure.
+
+- **Documented fact:** the commit reports reproducers for self-requeueing work on an unbound queue and chained queueing across per-CPU queues.
+- **Engineering interpretation:** a drain is only a lifetime boundary after producers are controlled and the exact chained-work semantics are satisfied.
+
+### SCMI device destroy and device-reference ownership
+
+The [SCMI device lifetime fix 6abe8fe36b29ff51d1a42c2f338972883f4751a5](https://github.com/torvalds/linux/commit/6abe8fe36b29ff51d1a42c2f338972883f4751a5) explains that a child-device lookup dropped its reference before the destroy path finished using the pointer. It also delays reuse of a bus ID until sysfs removal is complete and centralizes release to avoid a double free.
+
+- **Documented fact:** the commit message describes the premature put, concurrent unregister and bus-ID reuse window.
+- **Engineering interpretation:** lookup references must remain held for the entire operation that consumes the object, not merely until the pointer is returned.
+
+### Facts versus interpretation
+
+- **Documented facts:** use the linked upstream commit messages and pinned v7.4-rc4 kref/devres/workqueue documentation.
+- **Observed lab implementation:** one kref belongs to the module owner and one to delayed work; cancellation returning true means the cancel path owns the pending-work put, while a running callback owns its own put.
+- **Engineering interpretation:** memory lifetime, code lifetime, publication lifetime and device DMA ownership are independent contracts. Every one must be closed before teardown completes.
