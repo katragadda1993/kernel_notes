@@ -94,3 +94,33 @@ Typical SoC/PCIe/audio split:
 - large CPU-only tables: kvzalloc() only when physical contiguity is unnecessary.
 
 Never cast a CPU pointer to dma_addr_t, assume vmalloc() memory is one physical segment, or free devm memory while a DMA engine/IRQ/work item/firmware callback can still access it.
+
+
+## Object lifetime and reference ownership
+
+Complete [Lesson 07 — Kernel Object Lifetime, References and Error Unwinding](lessons/00-foundations/lesson-07-object-lifetime-references-error-unwinding.md) before exposing driver-private state to multiple asynchronous users.
+
+For each object, maintain an ownership ledger:
+
+- creator/driver binding reference;
+- registry or subsystem publication reference;
+- one reference per open file/stream that can outlive the initiating call;
+- one reference per queued callback or asynchronous request;
+- references retained by firmware/remote processors only when the protocol explicitly models such ownership.
+
+Use `kref`/`refcount_t` for memory lifetime, locks for mutable state, RCU for safe lockless publication/lookup where justified, and subsystem/device references for their corresponding objects. These mechanisms are not interchangeable.
+
+Devres resources are tied to device detach and are not reference-counted. Do not let an open PCM stream, sysfs callback or firmware completion retain a pointer to `devm_kzalloc()` memory after unbind. `get_device()` keeps the device object alive but does not automatically extend the lifetime of arbitrary devres private data.
+
+### Teardown order to prove
+
+1. Stop accepting new users/requests and mark the state as stopping.
+2. Unpublish subsystem/registry interfaces so no new lookup/open can start.
+3. Stop the hardware/firmware producer; quiesce bus mastering and DMA.
+4. Mask and synchronize IRQs and unregister callbacks/notifiers.
+5. Cancel/flush work and timers in a sleepable context; drain chained work before destroying its queue.
+6. Drop registry, device and asynchronous references exactly once.
+7. Free DMA/private memory only after the last software and hardware user is gone.
+8. Let devres release the remaining device-bound resources after `remove()` returns.
+
+For PCIe audio/DSP designs, keep the descriptor ring, streaming payload, stream state and firmware IPC context as separate ownership objects. A stream reference must not accidentally keep a removed MMIO mapping or active DMA buffer alive.
