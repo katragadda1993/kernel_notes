@@ -320,3 +320,36 @@ Answer checkpoint: Use a fresh arm64 O= directory, set ARCH=arm64 and a verified
 
 **166. [Advanced | Architecture/trade-off] How would you design a reproducible kernel CI matrix for a SoC driver?**  
 Answer checkpoint: Pin source revision/config fragments/toolchains; use separate output trees; combine fast compile/config checks with Sparse, KUnit, kselftest and hardware/QEMU tests. Gate on correctness-critical jobs, mark expensive coverage as scheduled/advisory, and archive configs, logs and artifact hashes.
+
+
+## 16. Lesson 05 — Kernel runtime, modules, parameters and logging (Questions 167–176)
+
+**167. [Beginner | Fundamentals] What is the difference between a loadable kernel module and a userspace shared library?**  
+Answer checkpoint: A module executes in kernel privilege and uses kernel internal APIs. The module loader resolves kernel symbols, relocates sections, invokes init and manages references/unload. A userspace shared library is mapped into a process address space and follows the userspace ABI/runtime.
+
+**168. [Beginner | Fundamentals] What happens if a module initialization function returns a negative errno?**  
+Answer checkpoint: Loading fails. The init function must release every resource it acquired before returning; the module exit callback is not invoked for failed initialization.
+
+**169. [Intermediate | Fundamentals] Why should asynchronous work be cancelled synchronously before freeing its context?**  
+Answer checkpoint: The callback may still be running or may be queued to run later. cancel_delayed_work_sync() ensures pending/running execution is drained before the context or module code is released.
+
+**170. [Intermediate | Fundamentals] What do module parameter permission bits control?**  
+Answer checkpoint: They control access to the parameter's sysfs file when one is created. They do not replace validation, synchronization or the decision about which values can be supplied during module insertion.
+
+**171. [Intermediate | Source/API] What is the purpose of module_param_cb() compared with module_param()?**  
+Answer checkpoint: It supplies custom setter/getter operations, allowing validation, range checking and controlled updates rather than relying only on a standard type parser.
+
+**172. [Intermediate | Source/API] Explain the difference between pr_debug() and dynamic debug.**  
+Answer checkpoint: pr_debug() marks a debug callsite. Dynamic debug is a runtime mechanism that selectively enables eligible callsites by module/file/function/line/format when configured in the kernel.
+
+**173. [Advanced | Source/API] Why does the lab use both a stop flag and cancel_delayed_work_sync()?**  
+Answer checkpoint: The stop flag prevents a running callback from requeueing itself. Synchronous cancellation waits for pending or executing work to finish, establishing the lifetime boundary before memory is freed.
+
+**174. [Intermediate | Debugging] A module compiles successfully but cannot be loaded on the target. What evidence should be collected first?**  
+Answer checkpoint: Read the kernel log, inspect modinfo vermagic, target architecture, kernel config, symbol versions, module signature policy and the exact build tree. A successful .ko link is not proof of load compatibility.
+
+**175. [Advanced | Debugging] A driver crashes intermittently during rmmod while a work item or IRQ is active. How do you reason about the fix?**  
+Answer checkpoint: Stop new requests and hardware event production, set a stopping state, mask/synchronize IRQs, cancel work/timers synchronously, quiesce DMA and firmware ownership, then free buffers/context. Prove every asynchronous path is drained before release.
+
+**176. [Advanced | Architecture/trade-off] Why is a module reference insufficient to prove a DMA buffer is safe to free?**  
+Answer checkpoint: A module reference protects module code from unload while a user holds the reference. It does not prove the device or firmware has stopped bus mastering. Hardware must be quiesced and DMA mappings/ownership synchronized before memory is reclaimed.
