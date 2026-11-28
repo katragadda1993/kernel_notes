@@ -95,7 +95,7 @@ A custom callback is appropriate when a value needs validation:
             return 0;
     }
 
-The lab uses module_param_cb() and a matching getter.
+A matching getter can use READ_ONCE() for the same scalar. The lab implements both callbacks and registers them with module_param_cb().
 
 ### Parameter permissions
 
