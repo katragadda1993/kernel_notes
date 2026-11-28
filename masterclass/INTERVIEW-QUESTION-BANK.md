@@ -353,3 +353,37 @@ Answer checkpoint: Stop new requests and hardware event production, set a stoppi
 
 **176. [Advanced | Architecture/trade-off] Why is a module reference insufficient to prove a DMA buffer is safe to free?**  
 Answer checkpoint: A module reference protects module code from unload while a user holds the reference. It does not prove the device or firmware has stopped bus mastering. Hardware must be quiesced and DMA mappings/ownership synchronized before memory is reclaimed.
+
+
+## 16. Lesson 06 — Kernel memory allocation and GFP context (Questions 177–186)
+
+**177. [Beginner | Fundamentals] Why does a GFP mask form part of the correctness contract for an allocation?**  
+Answer checkpoint: It tells the allocator whether it may sleep, enter direct reclaim, perform I/O/filesystem work, use reserves or charge a memory cgroup. A mask incompatible with the caller's execution context can sleep in atomic context or cause reclaim recursion/deadlock.
+
+**178. [Beginner | Fundamentals] Compare physical contiguity and virtual contiguity for kmalloc(), vmalloc() and kvmalloc().**  
+Answer checkpoint: kmalloc returns a virtually and physically contiguous allocation; vmalloc maps potentially discontiguous pages into a contiguous kernel virtual range; kvmalloc may return either kind depending on whether its kmalloc attempt or vmalloc fallback succeeds.
+
+**179. [Intermediate | Fundamentals] What does alloc_pages(gfp, order) request from the buddy allocator?**  
+Answer checkpoint: A block of 2^order physically contiguous base pages. Higher orders are more vulnerable to external fragmentation and zone/watermark constraints.
+
+**180. [Intermediate | Fundamentals] Why does Linux have both a buddy page allocator and SLUB?**  
+Answer checkpoint: The buddy allocator manages physical page-frame blocks; SLUB efficiently allocates/frees typed objects carved from slab pages and size-class caches. They solve different granularity/performance problems.
+
+**181. [Intermediate | Source/API] Why is GFP_KERNEL unsuitable in a timer callback or hard IRQ handler?**  
+Answer checkpoint: GFP_KERNEL may enter direct reclaim and sleep. Timer and hard-IRQ contexts cannot sleep. Prefer preallocation; if a truly essential small atomic allocation is unavoidable, choose a nonblocking GFP mask and handle failure.
+
+**182. [Intermediate | Source/API] What bug does kcalloc() or kmalloc_array() prevent compared with kmalloc(n * size, GFP_KERNEL)?**  
+Answer checkpoint: They check multiplication overflow before allocation, preventing an undersized allocation followed by out-of-bounds indexing.
+
+**183. [Advanced | Source/API] How do GFP_NOWAIT and GFP_ATOMIC differ?**  
+Answer checkpoint: Both avoid sleeping/direct reclaim. GFP_ATOMIC may access emergency reserves and should be reserved for critical atomic paths; GFP_NOWAIT avoids that reserve behavior and is more likely to fail, so it needs a fallback.
+
+**184. [Intermediate | Debugging] A warning says “sleeping function called from invalid context” after a driver adds kmalloc(GFP_KERNEL). How do you diagnose it?**  
+Answer checkpoint: Trace the complete call path and execution context, including IRQ/softirq/timer and spinlock/IRQ-disabled regions. Move work to a sleepable thread/workqueue or preallocate/recycle objects; do not just replace every mask with GFP_ATOMIC.
+
+**185. [Advanced | Debugging] A high-order page allocation fails even though /proc/meminfo shows substantial MemFree. What do you inspect?**  
+Answer checkpoint: Requested order, zone/node, /proc/buddyinfo free blocks by order, /proc/pagetypeinfo, watermarks, migratetype, reclaim/compaction eligibility and fragmentation. MemFree is an aggregate and does not guarantee a suitably contiguous block.
+
+**186. [Advanced | Architecture/trade-off] Design memory allocation for a PCIe audio engine with a descriptor ring and large streaming PCM buffers.**  
+Answer checkpoint: Use the DMA API and device DMA mask. A coherent DMA allocation is a common choice for the descriptor ring; payloads use the ALSA/platform buffer path and streaming DMA mapping/SG as appropriate. Keep CPU pointers separate from DMA addresses, handle cache synchronization/ownership and quiesce DMA before freeing either allocation. Avoid vmalloc as a direct single-buffer DMA source.
+
