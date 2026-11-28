@@ -11,15 +11,15 @@ install, boot, or load anything. Example:
 USAGE
 }
 
-if [[ \${1:-} == "-h" || \${1:-} == "--help" || $# -lt 2 || $# -gt 3 ]]; then
+if [[ ${1:-} == "-h" || ${1:-} == "--help" || $# -lt 2 || $# -gt 3 ]]; then
     usage
-    [[ \${1:-} == "-h" || \${1:-} == "--help" ]] && exit 0
+    [[ ${1:-} == "-h" || ${1:-} == "--help" ]] && exit 0
     exit 2
 fi
 
 SRC=$(cd "$1" && pwd -P)
 OUT=$2
-ARCH_ARG=\${3:-\${ARCH:-}}
+ARCH_ARG=${3:-${ARCH:-}}
 
 if [[ -z "$ARCH_ARG" ]]; then
     case "$(uname -m)" in
@@ -74,6 +74,6 @@ else
 fi
 
 printf 'compiler_env: CC=%s CROSS_COMPILE=%s LLVM=%s\n' \
-    "\${CC:-default}" "\${CROSS_COMPILE:-default}" "\${LLVM:-default}"
+    "${CC:-default}" "${CROSS_COMPILE:-default}" "${LLVM:-default}"
 
 echo 'audit=read-only (no kernel build, install, boot or module load performed)'
