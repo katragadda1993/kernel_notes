@@ -79,3 +79,18 @@ For SoC work, the same source revision can be built for a host-side mock/test co
 ## Module runtime and safe-debugging prerequisite
 
 Complete [Lesson 05 — Kernel Runtime Essentials](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) before writing an asynchronous driver. Understand init failure unwinding, parameter validation, device-aware logging, dynamic debug and module references. Every work item, timer, IRQ thread and firmware callback needs an explicit stop/synchronize/free sequence. A module reference protects code lifetime; it does not prove that DMA or firmware access to a buffer has stopped.
+
+
+## Memory allocation and DMA contract prerequisite
+
+Complete Lesson 06 — Kernel Memory Allocation and GFP Context before choosing driver buffer allocation APIs.
+
+For each allocation, record object size, alignment and overflow safety; CPU virtual and physical contiguity requirements; device DMA requirements and the DMA API used; execution context and reclaim/sleep permission; possible reclaim recursion into filesystem or I/O; ownership, failure unwind and the point all asynchronous users stop.
+
+Typical SoC/PCIe/audio split:
+- CPU-only control structures: kzalloc() or a typed kmem_cache;
+- hardware descriptor ring: commonly dma_alloc_coherent() and its returned DMA handle;
+- streaming payload: subsystem buffer API plus streaming DMA mapping/SG as appropriate;
+- large CPU-only tables: kvzalloc() only when physical contiguity is unnecessary.
+
+Never cast a CPU pointer to dma_addr_t, assume vmalloc() memory is one physical segment, or free devm memory while a DMA engine/IRQ/work item/firmware callback can still access it.
