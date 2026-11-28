@@ -345,7 +345,7 @@ For deterministic comparisons, preserve the source revision, configuration, tool
 
 The lab directory contains:
 
-- kernel-tree-audit.sh — a read-only source/output-tree audit helper;
+- kernel-tree-audit.sh — a non-building source/output-tree audit helper;
 - debug.fragment — an example configuration fragment.
 
 Run:
@@ -355,9 +355,9 @@ chmod +x kernel-tree-audit.sh
 ./kernel-tree-audit.sh "$HOME/src/linux" "$HOME/build/linux-x86-debug" x86
 ~~~
 
-The script reports the source revision/dirty state when Git metadata exists, kernel version, output-tree config presence, kernel release, selected config symbols, generated-header presence and compiler environment. It does not build, install, boot or load a module.
+The script creates the output directory if needed, then reports the source revision/dirty state when Git metadata exists, kernel version, output-tree config presence, kernel release when configuration has been prepared, selected config symbols, generated-header presence and relevant build environment. It does not build, install, boot or load a module.
 
-Then perform the real configuration steps:
+Then perform the real configuration steps (the base.config copy lets diffconfig show only the fragment-induced changes):
 
 ~~~bash
 SRC=$HOME/src/linux
@@ -369,7 +369,7 @@ cp "$OUT/.config" "$OUT/base.config"
 make -C "$SRC" O="$OUT" ARCH=x86 olddefconfig
 
 grep -E '^(CONFIG_(MODULES|DEBUG_INFO|KALLSYMS|KALLSYMS_ALL|IKCONFIG|IKCONFIG_PROC)=|# CONFIG_.* is not set)' "$OUT/.config"
-"$SRC/scripts/diffconfig" "$SRC/arch/x86/configs/x86_64_defconfig" "$OUT/.config"
+"$SRC/scripts/diffconfig" "$OUT/base.config" "$OUT/.config"
 ~~~
 
 If you have a compatible build host and sufficient disk/RAM, build in the output directory:
