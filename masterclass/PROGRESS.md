@@ -4,7 +4,7 @@ Last updated: 2026-11-28
 
 ## Overall status
 
-The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/Kbuild fundamentals, source-tree/configuration/build workflow, and the module runtime/logging/teardown lifecycle. A lesson is marked content-complete only when its source walkthrough, lab, debugging exercise, exercises, knowledge check and references are present. Lab validation is reported separately from content completeness.
+The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/Kbuild fundamentals, source-tree/configuration/build workflow, module runtime/logging/teardown, and memory allocation/GFP context. A lesson is marked content-complete only when its source walkthrough, lab, debugging exercise, exercises, knowledge check and references are present. Lab validation is reported separately from content completeness.
 
 ## Lesson ledger
 
@@ -28,11 +28,12 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 - Lesson 04's audit helper passed bash -n and was executed against a deliberately minimal mock source/output fixture. It reported the fixture's mock version/config as expected. The fixture does not validate actual kernel Kconfig/Kbuild behavior.
 - The authoring environment has kernel headers (6.12.107/6.12.63) but no full kernel source checkout. No real v7.4-rc4 defconfig/fragment merge, full kernel build, arm64 cross-build or QEMU boot was performed.
 - Lesson 05's external module built successfully with Kbuild against /usr/src/linux-headers-6.12.107+deb13-amd64. modinfo showed all three parameter definitions and the 6.12.107 vermagic. readelf showed .init.text, .exit.text, .modinfo and __param. The running host is 6.18.57, so insertion/removal was deliberately not attempted. Runtime workqueue behavior, dynamic-debug control and injected init failure remain unverified.
+- Lesson 06's allocation module compiled and linked successfully against 6.12.107+deb13-amd64 headers. modinfo confirmed the module description, GPL license, parameters and 6.12.107 vermagic; readelf identified an ELF64 x86-64 relocatable object. The module was not loaded because the running host is 6.18.57. The read-only memory-observe.sh passed syntax validation and ran on 6.18.57, reading available /proc and /sys allocator snapshots. No memory-pressure/fault-injection or runtime timer/workqueue allocation result is claimed.
 - Sparse is not installed. No full v7.4-rc4 build, arm64 cross-build, QEMU boot or hardware validation is claimed.
 
 ## Next sequential lesson
 
-**Lesson 06 — Kernel Memory Allocation and GFP Context:** kmalloc/kzalloc/kcalloc/kfree, vmalloc/vfree, GFP flags, allocation context, failure handling, slab/page allocator overview and memory-lifetime debugging.
+**Lesson 07 — Kernel Object Lifetime, References and Error Unwinding:** ERR_PTR conventions, refcount_t/kref, ownership transfer, devres lifetime, asynchronous users and systematic probe/remove cleanup.
 
 ## Definition of done
 
@@ -50,3 +51,13 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 - Result: Kbuild compile, modpost and link succeeded. modinfo confirmed lesson05_runtime, version 1.0, parameter descriptions and vermagic 6.12.107+deb13-amd64.
 - readelf -S confirmed .init.text, .exit.text, .modinfo and __param sections.
 - The host kernel is 6.18.57, so the module was not loaded. No runtime log, dynamic-debug, workqueue cancellation or injected-init-failure result is claimed.
+
+
+## Lesson 06 allocation validation detail
+
+- Build command: make -C /tmp/lesson06 KDIR=/usr/src/linux-headers-6.12.107+deb13-amd64 clean all.
+- Result: Kbuild compiled lesson06_alloc.o, completed modpost and linked lesson06_alloc.ko.
+- modinfo confirmed the module name, GPL license, description, parameters and 6.12.107 vermagic.
+- readelf -h identified an ELF64 little-endian x86-64 relocatable module.
+- memory-observe.sh passed shell syntax validation and ran on the 6.18.57 host, reading memory/buddy/slab snapshots.
+- Module insertion was not attempted because the host is 6.18.57 while the module was built against 6.12.107 headers. No runtime allocation, GFP context, timer/workqueue, pressure, failure-injection, Sparse, v7.4-rc4, arm64 or hardware test is claimed.
