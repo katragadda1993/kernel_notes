@@ -116,3 +116,33 @@ The source-tree/build-system investigation should be evidence-based:
 - Treat the audit script in Lesson 04 as a metadata aid, not proof that the source tree builds or that a driver works.
 
 No claim is made that the Kconfig/Kbuild behavior was executed against a real v7.4-rc4 checkout in this publication; the helper was syntax-checked and tested against a minimal mock fixture only.
+
+
+## Lesson 05 — Module runtime, dynamic debug and asynchronous teardown
+
+The v7.4-rc4 source entry points for this investigation are:
+- [module_init()/module_exit() declarations](https://github.com/torvalds/linux/blob/v7.4-rc4/include/linux/module.h)
+- [Module loading and init invocation](https://github.com/torvalds/linux/blob/v7.4-rc4/kernel/module/main.c)
+- [Parameter operations and sysfs handling](https://github.com/torvalds/linux/blob/v7.4-rc4/kernel/params.c)
+- [Dynamic debug HOWTO](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/admin-guide/dynamic-debug-howto.rst)
+- [Workqueue API and cancellation semantics](https://github.com/torvalds/linux/blob/v7.4-rc4/Documentation/core-api/workqueue.rst)
+
+### Repeatable history investigation
+
+Use a full source checkout pinned to v7.4-rc4:
+
+    git log --follow --oneline v7.4-rc4 -- include/linux/module.h
+    git log --follow --oneline v7.4-rc4 -- kernel/module/main.c
+    git log --follow --oneline v7.4-rc4 -- kernel/params.c
+    git log --follow --oneline v7.4-rc4 -- Documentation/admin-guide/dynamic-debug-howto.rst
+    git blame v7.4-rc4 -- include/linux/moduleparam.h
+
+Then inspect the full commit and review discussion for any design change you use in a lesson. Do not infer the original motivation from a symbol name or a commit subject alone.
+
+### Documented behavior versus interpretation
+
+- **Documented/API behavior:** module initialization returns success or a negative errno; a failed init path must unwind its own acquisitions. Dynamic debug can select callsites at runtime when the kernel is configured for it. Workqueue cancellation APIs provide synchronization needed before freeing callback state.
+- **Observed in the lab source:** the delayed-work callback owns no independent allocation; it references the context and copied string. The exit path sets a stop flag, drains the delayed work synchronously and only then frees those objects.
+- **Engineering interpretation:** a module's code lifetime, a driver object's lifetime and a DMA buffer's hardware ownership are separate contracts. A module reference does not quiesce a bus master, and a successful cancel_delayed_work_sync() does not prove firmware stopped accessing shared memory.
+
+This is a lifecycle case study, not a claim about a particular vendor's proprietary hardware implementation.
