@@ -3,7 +3,7 @@
 A practical, source-driven path from foundations to advanced Linux kernel and hardware-driver engineering.
 
 ## Current progress
-Lessons 01–04 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs and chroot self-test passed; an external module compiled against 6.12.107 headers but was not loaded into the 6.18.57 host. Lesson 04's audit helper passed syntax and mock-fixture checks only; no full v7.4-rc4 build or arm64 cross-build was run. Sparse and a full QEMU kernel boot remain unverified. See [PROGRESS.md](PROGRESS.md).
+Lessons 01–05 are content-complete. The syscall and ELF labs ran on x86-64; the BusyBox initramfs/chroot self-test passed; Lesson 03's external module and Lesson 05's runtime module compiled against 6.12.107 headers but were not loaded into the 6.18.57 host. Lesson 04's audit helper passed syntax and mock-fixture checks only. Lesson 05's module metadata and ELF sections were inspected; runtime workqueue/dynamic-debug behavior and init-failure injection remain unverified. No full v7.4-rc4 build, arm64 cross-build, Sparse run or QEMU kernel boot is claimed. See [PROGRESS.md](PROGRESS.md).
 
 ## Learning philosophy
 - Understand the concept, then inspect the implementation in kernel source.
@@ -22,9 +22,9 @@ Lessons 01–04 are content-complete. The syscall and ELF labs ran on x86-64; th
 7. [Lesson 03: C, ELF, linker and Kbuild](lessons/00-foundations/lesson-03-c-elf-kernel-build.md) — kernel C types, ELF relocations, linker scripts and module build.
 8. [Lesson 04: Source tree, configuration and reproducible builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) — MAINTAINERS, Kconfig, fragments, O= trees and toolchains.
 9. [Lesson 05: Kernel runtime, modules, logging and safe teardown](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) — module lifecycle, parameters, dynamic debug, workqueue lifetime and error unwinding.
-9. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
-10. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
-11. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
+10. [Upstream merge and trend watch](UPSTREAM-TREND-WATCH.md) — mainline, linux-next, merge windows, subsystem trends and weekly engineering analysis.
+11. [Driver engineering track](DRIVER-ENGINEERING-TRACK.md) — end-to-end hardware-driver lifecycle and capstone projects.
+12. [Kernel source archaeology](SOURCE-ARCHAEOLOGY.md) — learn why designs exist through commits, reviews and mailing-list history.
 
 ## Curriculum map
 | Stage | Focus |
