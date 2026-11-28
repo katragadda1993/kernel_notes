@@ -48,6 +48,8 @@ Lab: build and boot a kernel in QEMU; load a hello module.
 9. Per-CPU data and CPU hotplug awareness
 Lab: build a module with managed resources, asynchronous work and robust error unwinding.
 
+**Completed lesson:** [Lesson 05 — Kernel Runtime Essentials: Modules, Parameters, Logging and Safe Teardown](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) covers module load/unload, validated parameters, printk/pr_*/dev_* logging, dynamic debug, delayed-work lifetime, error unwinding and safe teardown. The external module compiled against 6.12.107 headers; runtime insertion was not attempted because the host kernel is 6.18.57.
+
 ## Stage 3 — Core kernel internals
 1. Process creation, fork/exec and task_struct
 2. Scheduler classes, run queues and context switching
