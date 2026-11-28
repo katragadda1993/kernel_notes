@@ -146,3 +146,28 @@ Then inspect the full commit and review discussion for any design change you use
 - **Engineering interpretation:** a module's code lifetime, a driver object's lifetime and a DMA buffer's hardware ownership are separate contracts. A module reference does not quiesce a bus master, and a successful cancel_delayed_work_sync() does not prove firmware stopped accessing shared memory.
 
 This is a lifecycle case study, not a claim about a particular vendor's proprietary hardware implementation.
+
+
+## Lesson 05 — Three concrete runtime-lifetime fixes in mainline
+
+### Built-in parameter callback ran before the allocator
+
+[NVMe PCI commit ed75528c095bc7760a3cf34a3f3e2ec7a59eb285](https://github.com/torvalds/linux/commit/ed75528c095bc7760a3cf34a3f3e2ec7a59eb285) documents an early boot hang when the built-in NVMe driver parsed nvme.quirks using module_param_cb(). The parameter callback ran at initcall level -1, before memory allocators were initialized. The fix used device_param_cb() to defer parsing to device initcall level 6.
+
+- **Documented fact:** the commit message states the callback timing, the allocator dependency and the changed parameter macro.
+- **Engineering lesson:** built-in parameter parsing can be earlier than normal driver probe. A setter that allocates memory or assumes device infrastructure must be placed in an appropriate initialization phase.
+
+### Debug logging dereferenced a gadget after unbind
+
+[USB gadget commit 018e3bf95e6360b7d528d3094b5302fb4e2fbed0](https://github.com/torvalds/linux/commit/018e3bf95e6360b7d528d3094b5302fb4e2fbed0) explains that the gadget pointer was cleared during unbind while the net_device remained alive. The old composite logging macros dereferenced the gadget device and could crash in eth_stop(); the fix changed to netdev_*() logging tied to the surviving network-device object.
+
+- **Documented fact:** the commit includes the failure call trace and the macro replacement.
+- **Engineering lesson:** a debug log call has pointer-lifetime requirements. Enabling dynamic debug can expose a dereference hidden in a logging macro.
+
+### Atomic context cannot wait for delayed work
+
+[fbcon commit b3a3f241dace3d4a775e1401b53a3f6d304534f0](https://github.com/torvalds/linux/commit/b3a3f241dace3d4a775e1401b53a3f6d304534f0) separates nonblocking cancellation from synchronous cancellation. A console cursor path could execute in atomic context, where cancel_delayed_work_sync() may sleep. The synchronous variant remains in release, where the callback must be finished before its context is freed.
+
+- **Documented fact:** the commit message gives the atomic call path and the DEBUG_ATOMIC_SLEEP report.
+- **Engineering lesson:** choose cancellation by both lifetime requirement and execution context. Nonblocking cancel alone does not prove callback completion; use a later sleepable teardown point to synchronize before freeing memory.
+
