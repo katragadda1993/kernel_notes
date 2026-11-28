@@ -95,7 +95,22 @@ A custom callback is appropriate when a value needs validation:
             return 0;
     }
 
-A matching getter can use READ_ONCE() for the same scalar. The lab implements both callbacks and registers them with module_param_cb().
+A matching getter can use READ_ONCE() for the same scalar:
+
+    static int repeat_get(char *buffer, const struct kernel_param *kp)
+    {
+            return scnprintf(buffer, PAGE_SIZE, "%u\\n",
+                             READ_ONCE(*(unsigned int *)kp->arg));
+    }
+
+    static const struct kernel_param_ops repeat_ops = {
+            .set = repeat_set,
+            .get = repeat_get,
+    };
+
+    module_param_cb(repeat, &repeat_ops, &repeat, 0644);
+
+The lab implements both callbacks and registers them with module_param_cb().
 
 ### Parameter permissions
 
