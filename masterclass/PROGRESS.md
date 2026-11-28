@@ -16,6 +16,8 @@ The foundation lessons now cover privilege/syscall entry, boot/initramfs, C/ELF/
 | [04 — Source tree, configuration and reproducible builds](lessons/00-foundations/lesson-04-kernel-tree-config-reproducible-builds.md) | 1 | Source tree, MAINTAINERS, Kconfig, fragments, Kbuild outputs, architecture/toolchain selection and build provenance | Complete | bash -n passed; audit helper control flow tested against a minimal mock fixture. This is not a real Linux source-tree audit. Full v7.4-rc4 Kconfig merge/build, arm64 cross-build and QEMU boot not performed | v7.4-rc4 |
 | [05 — Kernel runtime, modules, logging and safe teardown](lessons/00-foundations/lesson-05-kernel-runtime-modules-logging-debugging.md) | 2 | Module lifecycle, parameters, printk/pr_*/dev_*, dynamic debug, delayed work, error unwinding and safe unload | Complete | External module built against 6.12.107+deb13-amd64 headers; modinfo and readelf inspected. Not loaded because host runs 6.18.57. Runtime workqueue, dynamic debug, init-failure injection, Sparse, v7.4-rc4 build, arm64 and hardware remain unverified | v7.4-rc4 |
 
+| [06 — Memory allocation and GFP context](lessons/00-foundations/lesson-06-memory-allocation-gfp.md) | 2/3 | kmalloc family, vmalloc/kvmalloc, kmem_cache, buddy/SLUB overview, GFP context, DMA distinction and memory observability | Complete | Module compiled, modpost/link passed against 6.12.107+deb13-amd64; modinfo/readelf inspected. Read-only memory-observe.sh passed syntax and ran on 6.18.57. Module not loaded because headers do not match host; runtime GFP/timer/workqueue, memory pressure/fault injection, Sparse, v7.4-rc4, arm64 and hardware remain unverified | v7.4-rc4 |
+
 ## Coverage notes
 
 - Stage 0 items 1–2 are introduced by Lesson 01.
